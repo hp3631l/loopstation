@@ -205,8 +205,8 @@ function buildTrackCards() {
 
     // Giant Pad Trigger (Mouse & Touch)
     const triggerBtn = strip.querySelector(`#trigger-btn-${i}`);
-    triggerBtn.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
+    
+    const onPadPress = (e) => {
       selectTrack(i);
       const trackSnap = lastTelemetryTracks[i];
       const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
@@ -217,7 +217,22 @@ function buildTrackCards() {
       } else {
         triggerTrack(i);
       }
-    });
+    };
+
+    const onPadRelease = (e) => {
+      const mode = trackModes[i] || "Play";
+      if (mode === "PartialMpc") {
+        const trackSnap = lastTelemetryTracks[i];
+        if (trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Recording") {
+          setTrackPaused(i, true);
+        }
+      }
+    };
+
+    triggerBtn.addEventListener("pointerdown", onPadPress);
+    triggerBtn.addEventListener("pointerup", onPadRelease);
+    triggerBtn.addEventListener("pointerleave", onPadRelease);
+    triggerBtn.addEventListener("pointercancel", onPadRelease);
 
     const modeBtn = strip.querySelector(`#mode-btn-${i}`);
     modeBtn.addEventListener("click", () => {
@@ -618,7 +633,7 @@ window.addEventListener("keyup", (e) => {
       isPKeyHeld = false;
       setTrackPaused(activeTrackIdx, false);
     }
-  } else if (key === " ") {
+  } else if (key === " " || key.toLowerCase() === mpcKey.toLowerCase()) {
     // If active track is in PartialMpc (Gate) mode, stop playback on key release
     const trackSnap = lastTelemetryTracks[activeTrackIdx];
     const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
