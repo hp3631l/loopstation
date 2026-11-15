@@ -48,13 +48,33 @@ impl AudioEngine {
 
         let host = cpal::default_host();
 
-        let in_device = host
-            .default_input_device()
-            .ok_or_else(|| "No input device (microphone) detected".to_string())?;
+        let in_device = if let Some(id) = input_id {
+            if id != "default" {
+                host.input_devices()
+                    .ok()
+                    .and_then(|mut devs| devs.find(|d| d.name().map(|n| n == id).unwrap_or(false)))
+                    .or_else(|| host.default_input_device())
+            } else {
+                host.default_input_device()
+            }
+        } else {
+            host.default_input_device()
+        }
+        .ok_or_else(|| "No input device (microphone) detected".to_string())?;
 
-        let out_device = host
-            .default_output_device()
-            .ok_or_else(|| "No output device (headphones/speakers) detected".to_string())?;
+        let out_device = if let Some(id) = output_id {
+            if id != "default" {
+                host.output_devices()
+                    .ok()
+                    .and_then(|mut devs| devs.find(|d| d.name().map(|n| n == id).unwrap_or(false)))
+                    .or_else(|| host.default_output_device())
+            } else {
+                host.default_output_device()
+            }
+        } else {
+            host.default_output_device()
+        }
+        .ok_or_else(|| "No output device (headphones/speakers) detected".to_string())?;
 
         let in_def = in_device
             .default_input_config()
@@ -254,8 +274,12 @@ impl AudioEngine {
             .play()
             .map_err(|e| format!("Failed to start input stream: {}", e))?;
 
-        let current_in = input_id.unwrap_or("default").to_string();
-        let current_out = output_id.unwrap_or("default").to_string();
+        let current_in = in_device
+            .name()
+            .unwrap_or_else(|_| input_id.unwrap_or("default").to_string());
+        let current_out = out_device
+            .name()
+            .unwrap_or_else(|_| output_id.unwrap_or("default").to_string());
 
         Ok(Self {
             _in_stream: in_stream,

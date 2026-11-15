@@ -143,16 +143,21 @@ fn parse_pactl_output(
 }
 
 fn format_clean_description(desc: &str, name: &str) -> String {
-    if desc.to_lowercase().contains("microphone") || name.to_lowercase().contains("microphone") {
-        if desc.contains("USB") || name.contains("usb") {
-            return "🎙️ USB Microphone".to_string();
+    let lower_desc = desc.to_lowercase();
+    let lower_name = name.to_lowercase();
+    if lower_desc.contains("microphone") || lower_name.contains("microphone") || lower_desc.contains("mic") {
+        if desc.starts_with("🎙️") {
+            return desc.to_string();
         }
-        return "🎙️ Built-in Microphone".to_string();
+        return format!("🎙️ {}", desc);
     }
-    if desc.to_lowercase().contains("headphone") || desc.to_lowercase().contains("speakers") || desc.to_lowercase().contains("analog") {
+    if lower_desc.contains("headphone") || lower_desc.contains("speakers") || lower_desc.contains("analog") || lower_desc.contains("output") {
+        if desc.starts_with("🎧") {
+            return desc.to_string();
+        }
         return format!("🎧 {}", desc);
     }
-    if desc.to_lowercase().contains("equalizer") {
+    if lower_desc.contains("equalizer") {
         return "🎛️ Equalizer (System)".to_string();
     }
     desc.to_string()
