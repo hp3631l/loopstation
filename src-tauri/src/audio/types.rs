@@ -10,10 +10,18 @@ pub enum TrackState {
     Muted,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PlaybackMode {
+    Play,       // Standard looping playback
+    TotalMpc,   // One-shot: plays from 0.0s to end once and stops; triggers retrigger
+    PartialMpc, // Gate: plays only while held down; pauses/mutes on release
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TrackSnapshot {
     pub id: usize,
     pub state: TrackState,
+    pub mode: PlaybackMode,
     pub playhead_norm: f32, // 0.0 to 1.0 progress through loop
     pub length_seconds: f32,
     pub volume: f32,
@@ -51,6 +59,7 @@ pub enum AudioCommand {
     SetTrackMute(usize, bool),
     SetTrackPaused(usize, bool),
     RetriggerTrack(usize),
+    SetTrackMode(usize, PlaybackMode),
     ToggleSolo(usize),
     SetTrackVolume(usize, f32),
     ClearTrack(usize),

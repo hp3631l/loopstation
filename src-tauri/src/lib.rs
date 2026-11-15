@@ -118,6 +118,22 @@ fn retrigger_track(track_id: usize, state: State<AppState>) -> Result<(), String
 }
 
 #[tauri::command]
+fn set_track_mode(track_id: usize, mode: String, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    let playback_mode = match mode.as_str() {
+        "TotalMpc" => audio::types::PlaybackMode::TotalMpc,
+        "PartialMpc" => audio::types::PlaybackMode::PartialMpc,
+        _ => audio::types::PlaybackMode::Play,
+    };
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetTrackMode(track_id, playback_mode));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
 fn toggle_solo(track_id: usize, state: State<AppState>) -> Result<(), String> {
     let lock = state.engine.lock().map_err(|e| e.to_string())?;
     if let Some(engine) = lock.as_ref() {
@@ -340,6 +356,7 @@ pub fn run() {
             set_track_mute,
             set_track_paused,
             retrigger_track,
+            set_track_mode,
             toggle_solo,
             set_track_volume,
             clear_track,

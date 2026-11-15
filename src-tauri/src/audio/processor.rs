@@ -107,6 +107,11 @@ impl LooperProcessor {
                         }
                     }
                 }
+                AudioCommand::SetTrackMode(idx, mode) => {
+                    if idx < NUM_TRACKS {
+                        self.tracks[idx].mode = mode;
+                    }
+                }
                 AudioCommand::ToggleSolo(idx) => {
                     if idx < NUM_TRACKS {
                         self.tracks[idx].is_solo = !self.tracks[idx].is_solo;

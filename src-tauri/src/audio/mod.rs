@@ -124,6 +124,7 @@ impl AudioEngine {
                 .map(|id| TrackSnapshot {
                     id,
                     state: TrackState::Empty,
+                    mode: types::PlaybackMode::Play,
                     playhead_norm: 0.0,
                     length_seconds: 0.0,
                     volume: 1.0,

@@ -123,6 +123,12 @@ function buildTrackCards() {
         <span class="master-led" id="master-pill-${i}">MASTER</span>
       </div>
 
+      <!-- Playback Mode Selector: PLAY (Loop) | TOTAL MPC (One-Shot) | PART MPC (Gate) -->
+      <div class="channel-mode-row">
+        <span class="mode-badge-label">MODE</span>
+        <button class="channel-mode-btn mode-play" id="mode-btn-${i}" title="Toggle: Play (Loop) / Total MPC (One-Shot) / Part MPC (Gate)">PLAY</button>
+      </div>
+
       <!-- Boss RC-505 Circular Silicone Performance Pad & Radial Loop Ring -->
       <div class="pad-assembly" id="trigger-btn-${i}">
         <div class="pad-circular-housing">
@@ -198,9 +204,26 @@ function buildTrackCards() {
 
     // Giant Pad Trigger
     const triggerBtn = strip.querySelector(`#trigger-btn-${i}`);
-    triggerBtn.addEventListener("click", () => {
+    triggerBtn.addEventListener("mousedown", () => {
       selectTrack(i);
-      triggerTrack(i);
+      const mode = trackModes[i] || "Play";
+      if (mode === "TotalMpc" || mode === "PartialMpc") {
+        retriggerTrack(i);
+      } else {
+        triggerTrack(i);
+      }
+    });
+
+    triggerBtn.addEventListener("mouseup", () => {
+      const mode = trackModes[i] || "Play";
+      if (mode === "PartialMpc") {
+        setTrackPaused(i, true);
+      }
+    });
+
+    const modeBtn = strip.querySelector(`#mode-btn-${i}`);
+    modeBtn.addEventListener("click", () => {
+      cycleTrackMode(i);
     });
 
     const muteBtn = strip.querySelector(`#mute-btn-${i}`);
@@ -464,6 +487,51 @@ async function retriggerTrack(idx) {
   }
 }
 
+// Track Playback Modes: 'Play' (Loop) | 'TotalMpc' (One-Shot) | 'PartialMpc' (Gate)
+const trackModes = ["Play", "Play", "Play", "Play"];
+
+async function setTrackMode(idx, mode) {
+  trackModes[idx] = mode;
+  if (invoke) {
+    try {
+      await invoke("set_track_mode", { trackId: idx, mode });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  updateModeButtonUI(idx, mode);
+}
+
+function cycleTrackMode(idx) {
+  const current = trackModes[idx] || "Play";
+  const nextMap = {
+    Play: "TotalMpc",
+    TotalMpc: "PartialMpc",
+    PartialMpc: "Play",
+  };
+  const next = nextMap[current] || "Play";
+  setTrackMode(idx, next);
+}
+
+function updateModeButtonUI(idx, mode) {
+  const btn = document.getElementById(`mode-btn-${idx}`);
+  if (!btn) return;
+  btn.classList.remove("mode-play", "mode-total", "mode-partial");
+  if (mode === "TotalMpc") {
+    btn.textContent = "TOTAL MPC";
+    btn.classList.add("mode-total");
+    btn.title = "One-Shot: Plays sample once to end and stops; strike cuts & retriggers";
+  } else if (mode === "PartialMpc") {
+    btn.textContent = "PART MPC";
+    btn.classList.add("mode-partial");
+    btn.title = "Gate: Plays only while pad/key is held down, stops immediately on release";
+  } else {
+    btn.textContent = "PLAY";
+    btn.classList.add("mode-play");
+    btn.title = "Play: Continuous synchronized loop playback";
+  }
+}
+
 // Keyboard shortcuts for hands-on beatbox looping
 window.addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
@@ -474,9 +542,19 @@ window.addEventListener("keydown", (e) => {
   else if (key === "2") selectTrack(1);
   else if (key === "3") selectTrack(2);
   else if (key === "4") selectTrack(3);
-  else if (key === " ") {
+  else if (key === "o" || key === "O") {
+    // Cycle playback mode for active channel: PLAY -> TOTAL MPC -> PART MPC
+    cycleTrackMode(activeTrackIdx);
+  } else if (key === " ") {
     e.preventDefault();
-    triggerTrack(activeTrackIdx);
+    const mode = trackModes[activeTrackIdx] || "Play";
+    if (mode === "TotalMpc") {
+      retriggerTrack(activeTrackIdx);
+    } else if (mode === "PartialMpc") {
+      retriggerTrack(activeTrackIdx);
+    } else {
+      triggerTrack(activeTrackIdx);
+    }
   } else if (key.toLowerCase() === mpcKey.toLowerCase()) {
     // 3. MPC Behavior: Retrigger from start on strike
     e.preventDefault();
@@ -539,6 +617,12 @@ window.addEventListener("keyup", (e) => {
     if (isPKeyHeld) {
       isPKeyHeld = false;
       setTrackPaused(activeTrackIdx, false);
+    }
+  } else if (key === " ") {
+    // If active track is in PartialMpc (Gate) mode, stop playback on key release
+    const mode = trackModes[activeTrackIdx] || "Play";
+    if (mode === "PartialMpc") {
+      setTrackPaused(activeTrackIdx, true);
     }
   }
 });
@@ -708,11 +792,17 @@ function renderState(snap) {
       undoBtn.disabled = !t.has_undo;
       undoBtn.classList.toggle("active-undo", t.has_undo);
     }
+
+    // Sync mode button UI if telemetry provides it
+    if (t.mode && trackModes[i] !== t.mode) {
+      trackModes[i] = t.mode;
+      updateModeButtonUI(i, t.mode);
+    }
   });
 }
 
 // In-Place Update Checker & Self-Updater
-const CURRENT_VERSION = "v0.1.0";
+const CURRENT_VERSION = "v0.1.2";
 const GITHUB_REPO = "hp3631l/loopstation";
 const checkUpdateBtn = document.getElementById("check-update-btn");
 const versionTag = document.getElementById("current-version-tag");
@@ -772,7 +862,7 @@ if (checkUpdateBtn) {
     if (checkUpdateBtn.classList.contains("available") && latestDownloadUrl) {
       if (!invoke) return;
       isUpdating = true;
-      checkUpdateBtn.textContent = "UPDATING...";
+      checkUpdateBtn.textContent = "DOWNLOADING...";
       checkUpdateBtn.classList.add("available");
 
       try {

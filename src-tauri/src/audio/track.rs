@@ -1,4 +1,4 @@
-use super::types::{TrackSnapshot, TrackState};
+use super::types::{PlaybackMode, TrackSnapshot, TrackState};
 
 pub const MAX_RECORDING_SECONDS: usize = 90;
 pub const CROSSFADE_FRAMES: usize = 128; // ~2.9ms at 44.1kHz, eliminates clicks
@@ -7,6 +7,7 @@ pub const CROSSFADE_FRAMES: usize = 128; // ~2.9ms at 44.1kHz, eliminates clicks
 pub struct LoopTrack {
     pub id: usize,
     pub state: TrackState,
+    pub mode: PlaybackMode,
     pub buffer: Vec<f32>, // interleaved stereo [L, R, L, R...]
     pub length_frames: usize,
     pub playhead: usize, // current frame index (0..length_frames)
@@ -28,6 +29,7 @@ impl LoopTrack {
         Self {
             id,
             state: TrackState::Empty,
+            mode: PlaybackMode::Play,
             buffer,
             length_frames: 0,
             playhead: 0,
@@ -145,10 +147,14 @@ impl LoopTrack {
             (0.0, 0.0)
         };
 
-        // Advance playhead and detect seam wrap
+        // Advance playhead and detect seam wrap / one-shot finish
         self.playhead += 1;
         let wrapped = if self.playhead >= self.length_frames {
             self.playhead = 0;
+            if self.mode == PlaybackMode::TotalMpc {
+                // In Total MPC (One-Shot), play once to the end and stop!
+                self.is_paused = true;
+            }
             true
         } else {
             false
@@ -222,6 +228,7 @@ impl LoopTrack {
         TrackSnapshot {
             id: self.id,
             state: self.state,
+            mode: self.mode,
             playhead_norm,
             length_seconds,
             volume: self.volume,

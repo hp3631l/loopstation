@@ -143,4 +143,39 @@ mod tests {
         // While master hasn't wrapped, Track 1 is queued
         assert_eq!(processor.tracks[1].state, TrackState::QueuedRecord);
     }
+
+    #[test]
+    fn test_mpc_modes_playback() {
+        use crate::audio::types::PlaybackMode;
+        let mut track = LoopTrack::new(0, 44100);
+        track.start_recording();
+        // Record 100 frames
+        for _ in 0..100 {
+            track.record_frame(0.8, 0.8);
+        }
+        track.finish_recording();
+        assert_eq!(track.length_frames, 100);
+        assert_eq!(track.state, TrackState::Playing);
+
+        // Test 1: TotalMpc (One-Shot) plays to end and stops (is_paused = true)
+        track.mode = PlaybackMode::TotalMpc;
+        track.playhead = 0;
+        track.is_paused = false;
+
+        for _ in 0..100 {
+            let (_, _, _) = track.read_and_advance(false);
+        }
+        // At frame 100, playhead wrapped and TotalMpc stops the track
+        assert!(track.is_paused);
+        // Advancing while paused yields silent 0.0
+        let (l, r, _) = track.read_and_advance(false);
+        assert_eq!(l, 0.0);
+        assert_eq!(r, 0.0);
+
+        // Retrigger resets playhead and unpauses
+        track.playhead = 0;
+        track.is_paused = false;
+        let (l2, r2, _) = track.read_and_advance(false);
+        assert!(l2 > 0.0 && r2 > 0.0);
+    }
 }
