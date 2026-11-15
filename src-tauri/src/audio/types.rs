@@ -48,6 +48,9 @@ pub enum AudioCommand {
     SelectTrack(usize),
     TriggerTrack(usize), // Tap record/play/overdub (Boss RC-505 style)
     ToggleMute(usize),
+    SetTrackMute(usize, bool),
+    SetTrackPaused(usize, bool),
+    RetriggerTrack(usize),
     ToggleSolo(usize),
     SetTrackVolume(usize, f32),
     ClearTrack(usize),

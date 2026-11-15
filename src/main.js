@@ -412,6 +412,58 @@ function updateActiveCardHighlight() {
   }
 }
 
+// Performance State & Key Bindings
+let mpcKey = localStorage.getItem("loopstation_mpc_key") || "j";
+let isMKeyHeld = false;
+let isPKeyHeld = false;
+let mKeyDownTime = 0;
+let pKeyDownTime = 0;
+
+const mpcKeyBadge = document.getElementById("mpc-key-badge");
+if (mpcKeyBadge) {
+  mpcKeyBadge.textContent = mpcKey.toUpperCase();
+  mpcKeyBadge.title = "Click to reassign MPC Chops trigger key";
+  mpcKeyBadge.style.cursor = "pointer";
+  mpcKeyBadge.addEventListener("click", () => {
+    const chosen = prompt("Enter a key to use for MPC Chops (e.g., J, K, B):", mpcKey.toUpperCase());
+    if (chosen && chosen.trim().length > 0) {
+      mpcKey = chosen.trim().toLowerCase()[0];
+      localStorage.setItem("loopstation_mpc_key", mpcKey);
+      mpcKeyBadge.textContent = mpcKey.toUpperCase();
+    }
+  });
+}
+
+async function setTrackMute(idx, muted) {
+  if (invoke) {
+    try {
+      await invoke("set_track_mute", { trackId: idx, muted });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function setTrackPaused(idx, paused) {
+  if (invoke) {
+    try {
+      await invoke("set_track_paused", { trackId: idx, paused });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function retriggerTrack(idx) {
+  if (invoke) {
+    try {
+      await invoke("retrigger_track", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
 // Keyboard shortcuts for hands-on beatbox looping
 window.addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
@@ -425,8 +477,24 @@ window.addEventListener("keydown", (e) => {
   else if (key === " ") {
     e.preventDefault();
     triggerTrack(activeTrackIdx);
+  } else if (key.toLowerCase() === mpcKey.toLowerCase()) {
+    // 3. MPC Behavior: Retrigger from start on strike
+    e.preventDefault();
+    retriggerTrack(activeTrackIdx);
   } else if (key === "m" || key === "M") {
-    toggleMute(activeTrackIdx);
+    // 1. Mute on Hold: Mutes instantly when held down
+    if (!isMKeyHeld) {
+      isMKeyHeld = true;
+      mKeyDownTime = performance.now();
+      setTrackMute(activeTrackIdx, true);
+    }
+  } else if (key === "p" || key === "P") {
+    // 2. Pause on Hold (Option B: tape stop/freeze)
+    if (!isPKeyHeld) {
+      isPKeyHeld = true;
+      pKeyDownTime = performance.now();
+      setTrackPaused(activeTrackIdx, true);
+    }
   } else if (key === "s" || key === "S") {
     toggleSolo(activeTrackIdx);
   } else if (key === "u" || key === "U") {
@@ -446,6 +514,32 @@ window.addEventListener("keydown", (e) => {
     }
   } else if (key === "Escape") {
     masterPlayStop();
+  }
+});
+
+// Keyup handler to release momentary Mute and Pause
+window.addEventListener("keyup", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+
+  const key = e.key;
+
+  if (key === "m" || key === "M") {
+    if (isMKeyHeld) {
+      isMKeyHeld = false;
+      const duration = performance.now() - mKeyDownTime;
+      if (duration < 180) {
+        // Quick tap: behaves as normal persistent mute toggle
+        // We already set it muted in keydown, so nothing to revert
+      } else {
+        // Held: release mute (unmute) upon release
+        setTrackMute(activeTrackIdx, false);
+      }
+    }
+  } else if (key === "p" || key === "P") {
+    if (isPKeyHeld) {
+      isPKeyHeld = false;
+      setTrackPaused(activeTrackIdx, false);
+    }
   }
 });
 

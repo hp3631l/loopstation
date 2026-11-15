@@ -84,6 +84,29 @@ impl LooperProcessor {
                         self.tracks[idx].is_muted = !self.tracks[idx].is_muted;
                     }
                 }
+                AudioCommand::SetTrackMute(idx, muted) => {
+                    if idx < NUM_TRACKS {
+                        self.tracks[idx].is_muted = muted;
+                    }
+                }
+                AudioCommand::SetTrackPaused(idx, paused) => {
+                    if idx < NUM_TRACKS {
+                        self.tracks[idx].is_paused = paused;
+                    }
+                }
+                AudioCommand::RetriggerTrack(idx) => {
+                    if idx < NUM_TRACKS {
+                        let t = &mut self.tracks[idx];
+                        if t.length_frames > 0 {
+                            t.playhead = 0;
+                            t.is_paused = false;
+                            t.is_muted = false;
+                            if t.state != TrackState::Recording {
+                                t.state = TrackState::Playing;
+                            }
+                        }
+                    }
+                }
                 AudioCommand::ToggleSolo(idx) => {
                     if idx < NUM_TRACKS {
                         self.tracks[idx].is_solo = !self.tracks[idx].is_solo;

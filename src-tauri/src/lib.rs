@@ -85,6 +85,39 @@ fn toggle_mute(track_id: usize, state: State<AppState>) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn set_track_mute(track_id: usize, muted: bool, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetTrackMute(track_id, muted));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
+fn set_track_paused(track_id: usize, paused: bool, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetTrackPaused(track_id, paused));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
+fn retrigger_track(track_id: usize, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::RetriggerTrack(track_id));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
 fn toggle_solo(track_id: usize, state: State<AppState>) -> Result<(), String> {
     let lock = state.engine.lock().map_err(|e| e.to_string())?;
     if let Some(engine) = lock.as_ref() {
@@ -304,6 +337,9 @@ pub fn run() {
             trigger_track,
             select_track,
             toggle_mute,
+            set_track_mute,
+            set_track_paused,
+            retrigger_track,
             toggle_solo,
             set_track_volume,
             clear_track,

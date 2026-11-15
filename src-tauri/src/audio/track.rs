@@ -13,6 +13,7 @@ pub struct LoopTrack {
     pub volume: f32,     // 0.0 to 1.5
     pub is_muted: bool,
     pub is_solo: bool,
+    pub is_paused: bool,
     pub undo_buffer: Option<Vec<f32>>,
     pub peak_level: f32,
     sample_rate: u32,
@@ -33,6 +34,7 @@ impl LoopTrack {
             volume: 1.0,
             is_muted: false,
             is_solo: false,
+            is_paused: false,
             undo_buffer: None,
             peak_level: 0.0,
             sample_rate,
@@ -128,6 +130,11 @@ impl LoopTrack {
     /// Read next output frame from this track, advance playhead, and report if it wrapped
     pub fn read_and_advance(&mut self, is_any_solo: bool) -> (f32, f32, bool) {
         if self.length_frames == 0 || self.state == TrackState::Empty {
+            return (0.0, 0.0, false);
+        }
+
+        // If paused (held), playhead does not advance and output is muted
+        if self.is_paused {
             return (0.0, 0.0, false);
         }
 
