@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::process::Command;
+use cpal::traits::{DeviceTrait, HostTrait};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AudioDeviceInfo {
@@ -17,36 +17,78 @@ pub struct AudioDevicesPayload {
     pub current_buffer_size: u32,
 }
 
-/// Query human-readable device names from PipeWire/PulseAudio via pactl,
-/// falling back to sanitized ALSA/CPAL device names.
+/// Query human-readable device names cross-platform:
+/// - On Linux: reads PipeWire/PulseAudio via pactl with fallback to cpal
+/// - On Windows / other OS: queries native Windows WASAPI/MME devices directly via cpal
 pub fn get_friendly_devices(current_buf: u32) -> AudioDevicesPayload {
     let mut inputs = Vec::new();
     let mut outputs = Vec::new();
 
-    // 1. Try querying pactl for friendly PipeWire/PulseAudio names
-    if let (Ok(src_out), Ok(sink_out)) = (
-        Command::new("pactl").args(["list", "sources"]).output(),
-        Command::new("pactl").args(["list", "sinks"]).output(),
-    ) {
-        let default_source = Command::new("pactl")
-            .arg("get-default-source")
-            .output()
-            .ok()
-            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-            .unwrap_or_default();
+    #[cfg(target_os = "linux")]
+    {
+        use std::process::Command;
+        if let (Ok(src_out), Ok(sink_out)) = (
+            Command::new("pactl").args(["list", "sources"]).output(),
+            Command::new("pactl").args(["list", "sinks"]).output(),
+        ) {
+            let default_source = Command::new("pactl")
+                .arg("get-default-source")
+                .output()
+                .ok()
+                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                .unwrap_or_default();
 
-        let default_sink = Command::new("pactl")
-            .arg("get-default-sink")
-            .output()
-            .ok()
-            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-            .unwrap_or_default();
+            let default_sink = Command::new("pactl")
+                .arg("get-default-sink")
+                .output()
+                .ok()
+                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                .unwrap_or_default();
 
-        parse_pactl_output(&src_out.stdout, &default_source, &mut inputs, true);
-        parse_pactl_output(&sink_out.stdout, &default_sink, &mut outputs, false);
+            parse_pactl_output(&src_out.stdout, &default_source, &mut inputs, true);
+            parse_pactl_output(&sink_out.stdout, &default_sink, &mut outputs, false);
+        }
     }
 
-    // 2. If pactl gave results, use them; otherwise fallback to CPAL device enumeration
+    // Cross-platform fallback / Windows native WASAPI enumeration
+    if inputs.is_empty() || outputs.is_empty() {
+        let host = cpal::default_host();
+        let default_in_name = host.default_input_device().and_then(|d| d.name().ok());
+        let default_out_name = host.default_output_device().and_then(|d| d.name().ok());
+
+        if inputs.is_empty() {
+            if let Ok(devs) = host.input_devices() {
+                for dev in devs {
+                    if let Ok(name) = dev.name() {
+                        let is_default = default_in_name.as_ref().map(|d| d == &name).unwrap_or(false);
+                        let display = format_clean_description(&name, &name);
+                        inputs.push(AudioDeviceInfo {
+                            id: name.clone(),
+                            display_name: display,
+                            is_default,
+                        });
+                    }
+                }
+            }
+        }
+
+        if outputs.is_empty() {
+            if let Ok(devs) = host.output_devices() {
+                for dev in devs {
+                    if let Ok(name) = dev.name() {
+                        let is_default = default_out_name.as_ref().map(|d| d == &name).unwrap_or(false);
+                        let display = format_clean_description(&name, &name);
+                        outputs.push(AudioDeviceInfo {
+                            id: name.clone(),
+                            display_name: display,
+                            is_default,
+                        });
+                    }
+                }
+            }
+        }
+    }
+
     let current_in = inputs
         .iter()
         .find(|d| d.is_default)
@@ -68,6 +110,7 @@ pub fn get_friendly_devices(current_buf: u32) -> AudioDevicesPayload {
     }
 }
 
+#[cfg(target_os = "linux")]
 fn parse_pactl_output(
     bytes: &[u8],
     default_id: &str,
@@ -106,20 +149,28 @@ fn format_clean_description(desc: &str, name: &str) -> String {
         }
         return "🎙️ Built-in Microphone".to_string();
     }
-    if desc.to_lowercase().contains("analog") || name.to_lowercase().contains("analog") {
-        return "🎧 Headphones / Built-in Audio".to_string();
+    if desc.to_lowercase().contains("headphone") || desc.to_lowercase().contains("speakers") || desc.to_lowercase().contains("analog") {
+        return format!("🎧 {}", desc);
     }
     if desc.to_lowercase().contains("equalizer") {
-        return "🎛️ Equalizer (Omarchy System)".to_string();
+        return "🎛️ Equalizer (System)".to_string();
     }
     desc.to_string()
 }
 
 pub fn set_system_device(input_id: Option<&str>, output_id: Option<&str>) {
-    if let Some(src) = input_id {
-        let _ = Command::new("pactl").args(["set-default-source", src]).output();
+    #[cfg(target_os = "linux")]
+    {
+        use std::process::Command;
+        if let Some(src) = input_id {
+            let _ = Command::new("pactl").args(["set-default-source", src]).output();
+        }
+        if let Some(sink) = output_id {
+            let _ = Command::new("pactl").args(["set-default-sink", sink]).output();
+        }
     }
-    if let Some(sink) = output_id {
-        let _ = Command::new("pactl").args(["set-default-sink", sink]).output();
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = (input_id, output_id);
     }
 }
