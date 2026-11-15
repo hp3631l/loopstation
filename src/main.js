@@ -209,7 +209,7 @@ function buildTrackCards() {
       e.preventDefault();
       selectTrack(i);
       const trackSnap = lastTelemetryTracks[i];
-      const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord";
+      const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
       const mode = trackModes[i] || "Play";
 
       if (isRecorded && (mode === "TotalMpc" || mode === "PartialMpc")) {
@@ -547,7 +547,7 @@ window.addEventListener("keydown", (e) => {
     e.preventDefault();
     if (e.repeat) return; // Prevent OS key-repeat stutter while held
     const trackSnap = lastTelemetryTracks[activeTrackIdx];
-    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord";
+    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
     const mode = trackModes[activeTrackIdx] || "Play";
 
     if (isRecorded && (mode === "TotalMpc" || mode === "PartialMpc")) {
@@ -621,7 +621,7 @@ window.addEventListener("keyup", (e) => {
   } else if (key === " ") {
     // If active track is in PartialMpc (Gate) mode, stop playback on key release
     const trackSnap = lastTelemetryTracks[activeTrackIdx];
-    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord";
+    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
     const mode = trackModes[activeTrackIdx] || "Play";
     if (isRecorded && mode === "PartialMpc") {
       setTrackPaused(activeTrackIdx, true);

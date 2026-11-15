@@ -69,6 +69,10 @@ impl LoopTrack {
             self.apply_seam_crossfade();
             self.playhead = 0;
             self.state = TrackState::Playing;
+            // If in Total MPC or Partial MPC, stop immediately after punch-out recording
+            if self.mode == PlaybackMode::TotalMpc || self.mode == PlaybackMode::PartialMpc {
+                self.is_paused = true;
+            }
         } else if self.length_frames == 0 {
             self.state = TrackState::Empty;
         }
