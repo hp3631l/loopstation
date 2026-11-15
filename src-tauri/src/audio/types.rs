@@ -34,6 +34,11 @@ pub struct LooperSnapshot {
     pub monitor_volume: f32,
     pub input_gain: f32,
     pub sample_rate: u32,
+    pub metro_enabled: bool,
+    pub metro_bpm: f32,
+    pub metro_volume: f32,
+    pub metro_cue_only: bool,
+    pub metro_beat: u32,
 }
 
 pub use super::devices::{AudioDeviceInfo, AudioDevicesPayload};
@@ -52,4 +57,8 @@ pub enum AudioCommand {
     SetMonitorMic(bool),
     SetMonitorVolume(f32),
     SetInputGain(f32),
+    SetMetroEnabled(bool),
+    SetMetroBpm(f32),
+    SetMetroVolume(f32),
+    SetMetroCueOnly(bool),
 }

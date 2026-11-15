@@ -141,6 +141,11 @@ impl AudioEngine {
             monitor_volume: 1.0,
             input_gain: 1.0,
             sample_rate,
+            metro_enabled: false,
+            metro_bpm: 120.0,
+            metro_volume: 0.7,
+            metro_cue_only: true,
+            metro_beat: 0,
         }));
 
         let mut processor = LooperProcessor::new(sample_rate, cmd_rx, Arc::clone(&initial_snapshot));

@@ -16,6 +16,16 @@ pub struct LooperProcessor {
     pub input_gain: f32,
     pub mic_peak_level: f32,
     pub sample_rate: u32,
+    // Metronome state
+    pub metro_enabled: bool,
+    pub metro_bpm: f32,
+    pub metro_volume: f32,
+    pub metro_cue_only: bool,
+    pub metro_phase: f64,
+    pub metro_beat: u32,
+    metro_click_sample: usize,
+    metro_click_duration: usize,
+    metro_is_accent: bool,
     cmd_rx: Receiver<AudioCommand>,
     snapshot_slot: Arc<Mutex<LooperSnapshot>>,
 }
@@ -41,6 +51,15 @@ impl LooperProcessor {
             input_gain: 1.0,
             mic_peak_level: 0.0,
             sample_rate,
+            metro_enabled: false,
+            metro_bpm: 120.0,
+            metro_volume: 0.7,
+            metro_cue_only: true,
+            metro_phase: 0.0,
+            metro_beat: 0,
+            metro_click_sample: 0,
+            metro_click_duration: (sample_rate as f32 * 0.025) as usize, // 25ms percussive click
+            metro_is_accent: false,
             cmd_rx,
             snapshot_slot,
         }
@@ -110,6 +129,22 @@ impl LooperProcessor {
                 }
                 AudioCommand::SetInputGain(gain) => {
                     self.input_gain = gain.clamp(0.0, 2.0);
+                }
+                AudioCommand::SetMetroEnabled(enable) => {
+                    self.metro_enabled = enable;
+                    if enable {
+                        self.metro_phase = 0.0;
+                        self.metro_beat = 0;
+                    }
+                }
+                AudioCommand::SetMetroBpm(bpm) => {
+                    self.metro_bpm = bpm.clamp(40.0, 260.0);
+                }
+                AudioCommand::SetMetroVolume(vol) => {
+                    self.metro_volume = vol.clamp(0.0, 1.5);
+                }
+                AudioCommand::SetMetroCueOnly(cue_only) => {
+                    self.metro_cue_only = cue_only;
                 }
             }
         }
@@ -226,6 +261,38 @@ impl LooperProcessor {
             }
 
 
+            // Generate Metronome Click (synthesized percussion sound: woodblock style)
+            let mut metro_sample = 0.0f32;
+            if self.metro_enabled {
+                let frames_per_beat = (self.sample_rate as f64 * 60.0) / self.metro_bpm as f64;
+                self.metro_phase += 1.0;
+                if self.metro_phase >= frames_per_beat {
+                    self.metro_phase -= frames_per_beat;
+                    self.metro_beat = (self.metro_beat + 1) % 4;
+                    self.metro_is_accent = self.metro_beat == 0;
+                    self.metro_click_sample = 0;
+                }
+
+                if self.metro_click_sample < self.metro_click_duration {
+                    let t = self.metro_click_sample as f32 / self.sample_rate as f32;
+                    // Accent beat 1 is 1600 Hz, other beats 800 Hz
+                    let freq = if self.metro_is_accent { 1600.0 } else { 800.0 };
+                    // Decaying exponential envelope
+                    let decay = (-t * 120.0).exp();
+                    let wave = (2.0 * std::f32::consts::PI * freq * t).sin();
+                    metro_sample = wave * decay * self.metro_volume;
+                    self.metro_click_sample += 1;
+                }
+            }
+
+            // Mix metronome into audio:
+            // When metro_cue_only is true, it plays alongside monitor mic (for headphones)
+            // When false, it mixes directly into master output
+            if self.metro_enabled {
+                mix_l += metro_sample;
+                mix_r += metro_sample;
+            }
+
             // Add live mic monitoring (for headphones)
             if self.monitor_mic {
                 mix_l += mic_l * self.monitor_volume;
@@ -249,6 +316,11 @@ impl LooperProcessor {
                 monitor_volume: self.monitor_volume,
                 input_gain: self.input_gain,
                 sample_rate: self.sample_rate,
+                metro_enabled: self.metro_enabled,
+                metro_bpm: self.metro_bpm,
+                metro_volume: self.metro_volume,
+                metro_cue_only: self.metro_cue_only,
+                metro_beat: self.metro_beat,
             };
         }
     }

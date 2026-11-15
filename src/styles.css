@@ -163,14 +163,125 @@ body {
   margin-top: 2px;
 }
 
-/* Mic Channel Pod & Phones Pod */
-.mic-channel-pod, .monitor-pod {
+/* Mic Channel Pod & Phones Pod & Metronome Pod */
+.mic-channel-pod, .monitor-pod, .metro-pod {
   display: flex;
   flex-direction: column;
   background: #080808;
   border: 1px solid #1c1c1c;
   padding: 6px 10px;
   gap: 4px;
+}
+
+/* Metronome Module Styling */
+.metro-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metro-beat-indicators {
+  display: flex;
+  gap: 3px;
+  background: #000000;
+  padding: 3px 4px;
+  border: 1px solid #1a1a1a;
+}
+
+.beat-led {
+  width: 6px;
+  height: 10px;
+  background: #181818;
+  transition: all 0.04s ease;
+}
+
+.beat-led.on {
+  background: var(--screen-amber);
+  box-shadow: 0 0 6px var(--screen-amber);
+}
+
+.beat-led.accent.on {
+  background: var(--color-rec);
+  box-shadow: 0 0 8px var(--color-rec);
+}
+
+.bpm-stepper {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bpm-btn {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  color: #d4d4d8;
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bpm-btn:active {
+  background: #27272a;
+}
+
+.bpm-readout {
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #ffffff;
+  min-width: 26px;
+  text-align: center;
+}
+
+.tap-tempo-btn {
+  background: #18181b;
+  border: 1px solid #27272a;
+  color: #a1a1aa;
+  font-size: 0.52rem;
+  font-weight: 900;
+  padding: 2px 5px;
+  cursor: pointer;
+}
+
+.tap-tempo-btn:active {
+  background: #eab308;
+  color: #000000;
+}
+
+.metro-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metro-sub-row input[type="range"] {
+  width: 55px;
+  height: 3px;
+  background: #1c1c1c;
+  outline: none;
+  accent-color: #ffffff;
+}
+
+.cue-toggle-btn {
+  background: #141414;
+  border: 1px solid #262626;
+  color: #71717a;
+  font-size: 0.5rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  cursor: pointer;
+}
+
+.cue-toggle-btn.active {
+  background: #713f12;
+  border-color: #eab308;
+  color: #fef08a;
 }
 
 .pod-tag {
@@ -878,4 +989,46 @@ body {
 
 .spec-divider {
   color: #262626;
+}
+
+.update-section {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.version-tag {
+  color: #a1a1aa;
+  font-family: monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.update-btn {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  color: #a1a1aa;
+  font-family: monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.update-btn:hover {
+  background: #27272a;
+  color: #ffffff;
+}
+
+.update-btn.available {
+  background: #713f12;
+  border-color: #eab308;
+  color: #fef08a;
+  box-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
+}
+
+.update-btn.up-to-date {
+  color: #10b981;
+  border-color: #065f46;
 }

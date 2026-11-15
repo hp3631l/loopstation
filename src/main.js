@@ -36,6 +36,21 @@ const bufferSelect = document.getElementById("buffer-size-select");
 const latencyDisplay = document.getElementById("latency-display");
 const micLadder = document.getElementById("mic-ladder");
 
+// Metronome Elements
+const metroToggleBtn = document.getElementById("metro-toggle");
+const metroVolSlider = document.getElementById("metro-vol");
+const metroCueToggleBtn = document.getElementById("metro-cue-toggle");
+const bpmValDisplay = document.getElementById("bpm-val");
+const bpmUpBtn = document.getElementById("bpm-up");
+const bpmDownBtn = document.getElementById("bpm-down");
+const tapTempoBtn = document.getElementById("tap-tempo-btn");
+const metroBeatsContainer = document.getElementById("metro-beats");
+
+let currentBpm = 120;
+let metroActive = false;
+let metroCueOnly = true;
+let tapTimes = [];
+
 // Audio Device & Latency Routing
 async function loadAudioDevices() {
   if (!invoke) return;
@@ -336,6 +351,60 @@ monitorVolSlider.addEventListener("input", (e) => {
   }
 });
 
+// Metronome Controls Bindings
+function updateBpm(newBpm) {
+  currentBpm = Math.max(40, Math.min(260, Math.round(newBpm)));
+  bpmValDisplay.textContent = currentBpm;
+  if (invoke) {
+    invoke("set_metro_bpm", { bpm: currentBpm });
+  }
+}
+
+bpmUpBtn.addEventListener("click", () => updateBpm(currentBpm + 1));
+bpmDownBtn.addEventListener("click", () => updateBpm(currentBpm - 1));
+
+metroToggleBtn.addEventListener("click", () => {
+  metroActive = !metroActive;
+  metroToggleBtn.classList.toggle("active", metroActive);
+  metroToggleBtn.textContent = metroActive ? "CLICK ON" : "CLICK";
+  if (invoke) {
+    invoke("set_metro_enabled", { enable: metroActive });
+  }
+});
+
+metroVolSlider.addEventListener("input", (e) => {
+  const vol = parseFloat(e.target.value);
+  if (invoke) {
+    invoke("set_metro_volume", { volume: vol });
+  }
+});
+
+metroCueToggleBtn.addEventListener("click", () => {
+  metroCueOnly = !metroCueOnly;
+  metroCueToggleBtn.classList.toggle("active", metroCueOnly);
+  metroCueToggleBtn.textContent = metroCueOnly ? "CUE ONLY" : "MASTER OUT";
+  if (invoke) {
+    invoke("set_metro_cue_only", { cueOnly: metroCueOnly });
+  }
+});
+
+tapTempoBtn.addEventListener("click", () => {
+  const now = performance.now();
+  tapTimes.push(now);
+  if (tapTimes.length > 4) tapTimes.shift();
+  if (tapTimes.length >= 2) {
+    const intervals = [];
+    for (let i = 1; i < tapTimes.length; i++) {
+      intervals.push(tapTimes[i] - tapTimes[i - 1]);
+    }
+    const avgMs = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+    if (avgMs > 200 && avgMs < 1500) {
+      const calcBpm = 60000 / avgMs;
+      updateBpm(calcBpm);
+    }
+  }
+});
+
 function updateActiveCardHighlight() {
   for (let i = 0; i < 4; i++) {
     const strip = document.getElementById(`track-card-${i}`);
@@ -369,6 +438,13 @@ window.addEventListener("keydown", (e) => {
       clearAll();
     } else {
       clearTrack(activeTrackIdx);
+    }
+  } else if (key === "t" || key === "T") {
+    metroActive = !metroActive;
+    metroToggleBtn.classList.toggle("active", metroActive);
+    metroToggleBtn.textContent = metroActive ? "CLICK ON" : "CLICK";
+    if (invoke) {
+      invoke("set_metro_enabled", { enable: metroActive });
     }
   } else if (key === "Escape") {
     masterPlayStop();
@@ -415,6 +491,14 @@ function renderState(snap) {
     dots[2].classList.toggle("on", peak > 0.65); // yellow 1
     dots[1].classList.toggle("on", peak > 0.85); // yellow 2
     dots[0].classList.toggle("on", peak > 0.95); // red clip
+  }
+
+  // Render Metronome Beat LED Indicators (4 beats)
+  if (metroBeatsContainer) {
+    const leds = metroBeatsContainer.querySelectorAll(".beat-led");
+    leds.forEach((led, b) => {
+      led.classList.toggle("on", snap.metro_enabled && snap.metro_beat === b);
+    });
   }
 
   // Master Loop Time & Status
@@ -532,8 +616,63 @@ function renderState(snap) {
   });
 }
 
+// Update Checker logic
+const CURRENT_VERSION = "v0.1.0";
+const GITHUB_REPO = "hp3631l/loopstation";
+const checkUpdateBtn = document.getElementById("check-update-btn");
+const versionTag = document.getElementById("current-version-tag");
+
+if (versionTag) {
+  versionTag.textContent = CURRENT_VERSION;
+}
+
+let latestReleaseUrl = `https://github.com/${GITHUB_REPO}/releases/latest`;
+
+async function checkForUpdates(manual = false) {
+  if (!checkUpdateBtn) return;
+  checkUpdateBtn.textContent = "CHECKING...";
+  checkUpdateBtn.classList.remove("available", "up-to-date");
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+    if (!res.ok) throw new Error("Network error");
+    const release = await res.json();
+    const latestTag = release.tag_name || "";
+    latestReleaseUrl = release.html_url || latestReleaseUrl;
+
+    if (latestTag && latestTag !== CURRENT_VERSION) {
+      checkUpdateBtn.textContent = `UPDATE (${latestTag})`;
+      checkUpdateBtn.classList.add("available");
+      checkUpdateBtn.title = `Click to open download page for ${latestTag}`;
+    } else {
+      checkUpdateBtn.textContent = "UP TO DATE";
+      checkUpdateBtn.classList.add("up-to-date");
+      if (manual) {
+        setTimeout(() => {
+          checkUpdateBtn.textContent = "CHECK UPDATE";
+          checkUpdateBtn.classList.remove("up-to-date");
+        }, 3000);
+      }
+    }
+  } catch (err) {
+    console.error("Update check failed:", err);
+    checkUpdateBtn.textContent = manual ? "ERR CHECKING" : "CHECK UPDATE";
+  }
+}
+
+if (checkUpdateBtn) {
+  checkUpdateBtn.addEventListener("click", () => {
+    if (checkUpdateBtn.classList.contains("available")) {
+      window.open(latestReleaseUrl, "_blank");
+    } else {
+      checkForUpdates(true);
+    }
+  });
+}
+
 // Start
 buildTrackCards();
 updateActiveCardHighlight();
 loadAudioDevices();
 pollLoop();
+checkForUpdates(false);

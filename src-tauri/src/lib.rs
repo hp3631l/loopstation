@@ -183,6 +183,50 @@ fn set_input_gain(gain: f32, state: State<AppState>) -> Result<(), String> {
     }
 }
 
+#[tauri::command]
+fn set_metro_enabled(enable: bool, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetMetroEnabled(enable));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
+fn set_metro_bpm(bpm: f32, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetMetroBpm(bpm));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
+fn set_metro_volume(volume: f32, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetMetroVolume(volume));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
+#[tauri::command]
+fn set_metro_cue_only(cue_only: bool, state: State<AppState>) -> Result<(), String> {
+    let lock = state.engine.lock().map_err(|e| e.to_string())?;
+    if let Some(engine) = lock.as_ref() {
+        engine.send_command(AudioCommand::SetMetroCueOnly(cue_only));
+        Ok(())
+    } else {
+        Err("Audio engine not initialized".to_string())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let engine = match AudioEngine::new() {
@@ -219,6 +263,10 @@ pub fn run() {
             set_monitor_mic,
             set_monitor_volume,
             set_input_gain,
+            set_metro_enabled,
+            set_metro_bpm,
+            set_metro_volume,
+            set_metro_cue_only,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
