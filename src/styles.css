@@ -548,195 +548,198 @@ body {
 }
 
 /* ==========================================================================
-   HARDWARE PERFORMANCE PAD & RECTANGULAR LOOP BAR
+   BOSS RC-505 CIRCULAR SILICONE PERFORMANCE PAD & RADIAL LOOP RING
    ========================================================================== */
 .pad-assembly {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
   background: #000000;
   border: 1px solid #1a1a1a;
-  padding: 5px;
+  padding: 8px 4px;
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.95);
 }
 
-/* Linear Loop Position Bar */
-.loop-bar-track {
+.pad-circular-housing {
   position: relative;
-  height: 6px;
-  background: #080808;
-  border: 1px solid #1a1a1a;
-  overflow: hidden;
+  width: 126px;
+  height: 126px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.loop-bar-progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0%;
-  background: #333333;
-  transition: width 0.03s linear, background-color 0.15s ease;
-}
-
-.loop-bar-ticks {
+.pad-ring-svg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: space-between;
+  transform: rotate(-90deg);
   pointer-events: none;
 }
 
-.loop-bar-ticks span {
-  width: 1px;
-  height: 100%;
-  background: #181818;
+.ring-track {
+  fill: none;
+  stroke: #121316;
+  stroke-width: 6;
 }
 
-/* Chunky Tactile Silicone Rubber Trigger Pad */
-.hardware-pad {
-  background: #18191c;
-  border: 2px solid #2d3038;
-  border-top: 2px solid #3d424d;
-  border-bottom: 3px solid #0d0e11;
-  border-radius: 4px !important;
-  padding: 14px 10px;
+.ring-progress {
+  fill: none;
+  stroke: var(--screen-green);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 364.4;
+  stroke-dashoffset: 364.4;
+  transition: stroke-dashoffset 0.03s linear, stroke 0.15s ease;
+}
+
+/* Authentic Boss RC-505 Circular Silicone Tactile Button */
+.circular-silicone-pad {
+  width: 98px;
+  height: 98px;
+  border-radius: 50% !important;
+  background: radial-gradient(circle at 40% 35%, #252830 0%, #15171c 70%, #0d0e11 100%);
+  border: 2px solid #2f3440;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-height: 100px;
-  cursor: pointer;
-  /* Thick 3D silicone cushion: elevated shadow + top highlight + soft matte glow */
+  gap: 2px;
   box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.8),
-    0 1px 2px rgba(0, 0, 0, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.18),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.5);
-  transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.08s ease, background 0.12s ease;
+    0 4px 10px rgba(0, 0, 0, 0.9),
+    inset 0 2px 3px rgba(255, 255, 255, 0.22),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.7);
+  transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.08s ease;
+  user-select: none;
 }
 
-/* Highly responsive tactile physical push states */
-.pad-assembly:hover .hardware-pad {
-  filter: brightness(1.12);
-  border-top-color: #4f5563;
+.pad-assembly:hover .circular-silicone-pad {
+  filter: brightness(1.15);
 }
 
-.pad-assembly:active .hardware-pad {
-  transform: translateY(2px) scale(0.985);
-  border-bottom-width: 1px;
+.pad-assembly:active .circular-silicone-pad {
+  transform: scale(0.94);
   box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.9),
-    inset 0 2px 5px rgba(0, 0, 0, 0.8),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.05);
-}
-
-.pad-top-meta {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-size: 0.55rem;
-  font-family: monospace;
-  font-weight: 700;
-  color: #71717a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 3px;
-  margin-bottom: 2px;
+    0 1px 3px rgba(0, 0, 0, 0.95),
+    inset 0 3px 6px rgba(0, 0, 0, 0.9);
 }
 
 .pad-track-badge {
+  font-size: 0.52rem;
+  font-family: monospace;
+  font-weight: 800;
+  color: #71717a;
   letter-spacing: 1px;
 }
 
-.pad-time-text {
-  color: #a1a1aa;
-}
-
 .pad-state-text {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 900;
-  letter-spacing: 2.5px;
+  letter-spacing: 2px;
   color: #71717a;
   text-transform: uppercase;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .pad-action-sub {
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   font-weight: 800;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   color: #52525b;
   text-transform: uppercase;
 }
 
-/* Tactile Silicone LED Hardware States */
-.state-empty .hardware-pad {
-  background: #141518;
-  border-color: #242730;
-  border-top-color: #343845;
+.pad-time-text {
+  font-family: monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #a1a1aa;
 }
 
-.state-recording .hardware-pad {
-  background: radial-gradient(circle at 50% 30%, #ef4444 0%, #b91c1c 45%, #7f1d1d 95%);
+/* Circular Silicone Illuminated LED States */
+.state-empty .circular-silicone-pad {
+  background: radial-gradient(circle at 40% 35%, #22252c 0%, #131518 70%, #0a0b0d 100%);
+  border-color: #2b303b;
+}
+
+.state-recording .circular-silicone-pad {
+  background: radial-gradient(circle at 40% 35%, #ef4444 0%, #b91c1c 50%, #7f1d1d 100%);
   border-color: #f87171;
-  border-top-color: #fca5a5;
-  border-bottom-color: #450a0a;
   box-shadow: 
-    0 0 16px rgba(239, 68, 68, 0.6),
-    0 4px 8px rgba(0, 0, 0, 0.8),
-    inset 0 1px 2px rgba(255, 255, 255, 0.4),
-    inset 0 0 12px rgba(254, 202, 202, 0.3);
+    0 0 20px rgba(239, 68, 68, 0.7),
+    0 4px 10px rgba(0, 0, 0, 0.9),
+    inset 0 2px 4px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(69, 10, 10, 0.8);
 }
-.state-recording .loop-bar-progress {
-  background: #ef4444;
-  box-shadow: 0 0 6px #ef4444;
+.state-recording .ring-progress {
+  stroke: var(--color-rec);
+  box-shadow: 0 0 8px var(--color-rec);
 }
+.state-recording .pad-track-badge { color: #fecdd3; }
 .state-recording .pad-state-text {
   color: #ffffff;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px #000;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.95);
 }
-.state-recording .pad-action-sub {
-  color: #fee2e2;
-}
+.state-recording .pad-action-sub { color: #fee2e2; }
 
-.state-playing .hardware-pad {
-  background: radial-gradient(circle at 50% 30%, #22c55e 0%, #15803d 45%, #14532d 95%);
+.state-playing .circular-silicone-pad {
+  background: radial-gradient(circle at 40% 35%, #22c55e 0%, #15803d 50%, #14532d 100%);
   border-color: #4ade80;
-  border-top-color: #86efac;
-  border-bottom-color: #052e16;
   box-shadow: 
-    0 0 16px rgba(34, 197, 94, 0.55),
-    0 4px 8px rgba(0, 0, 0, 0.8),
-    inset 0 1px 2px rgba(255, 255, 255, 0.4),
-    inset 0 0 12px rgba(187, 247, 208, 0.3);
+    0 0 20px rgba(34, 197, 94, 0.65),
+    0 4px 10px rgba(0, 0, 0, 0.9),
+    inset 0 2px 4px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(5, 46, 22, 0.8);
 }
-.state-playing .loop-bar-progress {
-  background: #22c55e;
-  box-shadow: 0 0 6px #22c55e;
+.state-playing .ring-progress {
+  stroke: var(--color-play);
+  box-shadow: 0 0 8px var(--color-play);
 }
+.state-playing .pad-track-badge { color: #bbf7d0; }
 .state-playing .pad-state-text {
   color: #ffffff;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px #000;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.95);
 }
-.state-playing .pad-action-sub {
-  color: #dcfce7;
+.state-playing .pad-action-sub { color: #dcfce7; }
+
+.state-overdubbing .circular-silicone-pad {
+  background: radial-gradient(circle at 40% 35%, #f97316 0%, #c2410c 50%, #7c2d12 100%);
+  border-color: #fb923c;
+  box-shadow: 
+    0 0 20px rgba(249, 115, 22, 0.7),
+    0 4px 10px rgba(0, 0, 0, 0.9),
+    inset 0 2px 4px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(67, 20, 7, 0.8);
+}
+.state-overdubbing .ring-progress {
+  stroke: var(--color-dub);
+  box-shadow: 0 0 8px var(--color-dub);
+}
+.state-overdubbing .pad-track-badge { color: #fed7aa; }
+.state-overdubbing .pad-state-text {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.95);
+}
+.state-overdubbing .pad-action-sub { color: #ffedd5; }
+
+.state-queued .circular-silicone-pad {
+  background: radial-gradient(circle at 40% 35%, #eab308 0%, #a16207 50%, #451a03 100%);
+  border-color: #fde047;
+  box-shadow: 0 0 14px rgba(234, 179, 8, 0.6);
+}
+.state-queued .pad-state-text {
+  color: #fef08a;
 }
 
-.state-overdubbing .hardware-pad {
-  background: radial-gradient(circle at 50% 30%, #f97316 0%, #c2410c 45%, #7c2d12 95%);
-  border-color: #fb923c;
-  border-top-color: #fdba74;
-  border-bottom-color: #431407;
-  box-shadow: 
-    0 0 16px rgba(249, 115, 22, 0.6),
-    0 4px 8px rgba(0, 0, 0, 0.8),
-    inset 0 1px 2px rgba(255, 255, 255, 0.4),
-    inset 0 0 12px rgba(254, 215, 170, 0.3);
+.state-muted .circular-silicone-pad {
+  background: #16181c;
+  border-color: #272a32;
+  opacity: 0.6;
 }
 .state-overdubbing .loop-bar-progress {
   background: #f97316;

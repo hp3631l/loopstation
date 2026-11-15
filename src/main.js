@@ -123,21 +123,19 @@ function buildTrackCards() {
         <span class="master-led" id="master-pill-${i}">MASTER</span>
       </div>
 
-      <!-- Hardware Rectangular Performance Pad & Linear Loop Bar -->
+      <!-- Boss RC-505 Circular Silicone Performance Pad & Radial Loop Ring -->
       <div class="pad-assembly" id="trigger-btn-${i}">
-        <div class="loop-bar-track">
-          <div class="loop-bar-progress" id="loop-bar-${i}"></div>
-          <div class="loop-bar-ticks">
-            <span></span><span></span><span></span><span></span>
-          </div>
-        </div>
-        <div class="hardware-pad" id="pad-body-${i}">
-          <div class="pad-top-meta">
-            <span class="pad-track-badge">PAD ${i + 1}</span>
+        <div class="pad-circular-housing">
+          <svg class="pad-ring-svg" viewBox="0 0 130 130">
+            <circle class="ring-track" cx="65" cy="65" r="58"></circle>
+            <circle class="ring-progress" id="loop-ring-${i}" cx="65" cy="65" r="58"></circle>
+          </svg>
+          <div class="hardware-pad circular-silicone-pad" id="pad-body-${i}">
+            <span class="pad-track-badge">CH 0${i + 1}</span>
+            <span class="pad-state-text" id="state-text-${i}">EMPTY</span>
+            <span class="pad-action-sub" id="trigger-label-${i}">PUNCH REC</span>
             <span class="pad-time-text" id="time-text-${i}">--</span>
           </div>
-          <span class="pad-state-text" id="state-text-${i}">EMPTY</span>
-          <span class="pad-action-sub" id="trigger-label-${i}">PUNCH REC</span>
         </div>
       </div>
 
@@ -573,10 +571,13 @@ function renderState(snap) {
       timeText.textContent = t.length_seconds > 0 ? `${t.length_seconds.toFixed(1)}s` : "--";
     }
 
-    // Loop linear position bar
-    const loopBar = document.getElementById(`loop-bar-${i}`);
-    if (loopBar) {
-      loopBar.style.width = `${(t.playhead_norm * 100).toFixed(1)}%`;
+    // Circular radial loop ring (r = 58, circ = 2 * PI * 58 ≈ 364.4)
+    const ring = document.getElementById(`loop-ring-${i}`);
+    if (ring) {
+      const circ = 2 * Math.PI * 58;
+      const offset = circ * (1 - t.playhead_norm);
+      ring.style.strokeDasharray = `${circ}`;
+      ring.style.strokeDashoffset = `${offset}`;
     }
 
     // Channel 8-Segment Vertical LED Meter
