@@ -18,7 +18,7 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hp363
 
 ### Windows (Standalone Zip)
 1. Download **`loopstation-windows.zip`**.
-2. Extract the zip and double-click **`tauri-app.exe`** (or run the installer).
+2. Extract the zip and double-click **`loopstation.exe`**.
 3. Plug in your mic and headphones—the app automatically detects your audio hardware via WASAPI.
 
 ---
