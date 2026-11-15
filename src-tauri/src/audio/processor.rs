@@ -2,7 +2,7 @@ use crossbeam_channel::Receiver;
 use std::sync::{Arc, Mutex};
 
 use super::track::LoopTrack;
-use super::types::{AudioCommand, LooperSnapshot, TrackSnapshot, TrackState};
+use super::types::{AudioCommand, LooperSnapshot, PlaybackMode, TrackSnapshot, TrackState};
 
 pub const NUM_TRACKS: usize = 4;
 
@@ -110,6 +110,10 @@ impl LooperProcessor {
                 AudioCommand::SetTrackMode(idx, mode) => {
                     if idx < NUM_TRACKS {
                         self.tracks[idx].mode = mode;
+                        // When switching to Play (Loop) mode, automatically resume playback
+                        if mode == PlaybackMode::Play {
+                            self.tracks[idx].is_paused = false;
+                        }
                     }
                 }
                 AudioCommand::ToggleSolo(idx) => {
@@ -209,8 +213,13 @@ impl LooperProcessor {
                 track.finish_recording();
             }
             TrackState::Playing => {
-                // Play -> Overdub
-                track.start_overdub();
+                // If the track was paused (e.g. from MPC mode or pause on hold), resume it first!
+                if track.is_paused {
+                    track.is_paused = false;
+                } else {
+                    // Play -> Overdub
+                    track.start_overdub();
+                }
             }
             TrackState::Overdubbing => {
                 // Overdub -> Play

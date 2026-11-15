@@ -47,6 +47,7 @@ impl LoopTrack {
         self.buffer.clear();
         self.length_frames = 0;
         self.playhead = 0;
+        self.is_paused = false;
         self.undo_buffer = None;
         self.state = TrackState::Recording;
     }
@@ -92,6 +93,7 @@ impl LoopTrack {
         self.buffer.clear();
         self.length_frames = 0;
         self.playhead = 0;
+        self.is_paused = false;
         self.undo_buffer = None;
         self.peak_level = 0.0;
         self.state = TrackState::Empty;
