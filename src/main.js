@@ -127,13 +127,13 @@ function buildTrackCards() {
       <!-- Playback Mode Selector: PLAY (Loop) | MPC (One-Shot) -->
       <div class="channel-mode-row">
         <span class="mode-badge-label">MODE</span>
-        <button class="channel-mode-btn mode-play" id="mode-btn-${i}" title="Toggle: PLAY (Loop) / MPC (One-Shot)">PLAY</button>
+        <button class="channel-mode-btn mode-play" id="mode-btn-${i}" title="Toggle: PLAY (Loop) / MPC (One-Shot)" aria-label="Channel ${i + 1} Playback Mode">PLAY</button>
       </div>
 
       <!-- Boss RC-505 Circular Silicone Performance Pad & Radial Loop Ring -->
-      <div class="pad-assembly" id="trigger-btn-${i}">
+      <div class="pad-assembly" id="trigger-btn-${i}" role="button" tabindex="0" aria-label="Channel ${i + 1} Performance Pad">
         <div class="pad-circular-housing">
-          <svg class="pad-ring-svg" viewBox="0 0 130 130">
+          <svg class="pad-ring-svg" viewBox="0 0 130 130" aria-hidden="true">
             <circle class="ring-track" cx="65" cy="65" r="58"></circle>
             <circle class="ring-progress" id="loop-ring-${i}" cx="65" cy="65" r="58"></circle>
           </svg>
@@ -148,15 +148,15 @@ function buildTrackCards() {
 
       <!-- Tactile Micro-Pads -->
       <div class="channel-function-row">
-        <button class="func-pad" id="mute-btn-${i}">MUTE</button>
-        <button class="func-pad" id="solo-btn-${i}">SOLO</button>
-        <button class="func-pad" id="undo-btn-${i}" disabled>UNDO</button>
-        <button class="func-pad" id="clear-btn-${i}">CLEAR</button>
+        <button class="func-pad" id="mute-btn-${i}" aria-label="Channel ${i + 1} Mute">MUTE</button>
+        <button class="func-pad" id="solo-btn-${i}" aria-label="Channel ${i + 1} Solo">SOLO</button>
+        <button class="func-pad" id="undo-btn-${i}" aria-label="Channel ${i + 1} Undo" disabled>UNDO</button>
+        <button class="func-pad" id="clear-btn-${i}" aria-label="Channel ${i + 1} Clear">CLEAR</button>
       </div>
 
       <!-- Physical Studio Mixer Bay -->
       <div class="mixer-bay">
-        <div class="fader-scale">
+        <div class="fader-scale" aria-hidden="true">
           <span>+6</span>
           <span>0</span>
           <span>-6</span>
@@ -176,10 +176,11 @@ function buildTrackCards() {
             step="0.01"
             value="1.0"
             orient="vertical"
+            aria-label="Channel ${i + 1} Volume Fader"
           />
         </div>
 
-        <div class="channel-meter-ladder" id="track-meter-${i}">
+        <div class="channel-meter-ladder" id="track-meter-${i}" aria-hidden="true">
           <div class="meter-segment seg-red"></div>
           <div class="meter-segment seg-yellow"></div>
           <div class="meter-segment seg-yellow"></div>
@@ -220,6 +221,12 @@ function buildTrackCards() {
     };
 
     triggerBtn.addEventListener("pointerdown", onPadPress);
+    triggerBtn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onPadPress(e);
+      }
+    });
 
     const modeBtn = strip.querySelector(`#mode-btn-${i}`);
     modeBtn.addEventListener("click", () => {

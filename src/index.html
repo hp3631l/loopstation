@@ -29,14 +29,14 @@
               <span class="lcd-title">MASTER LOOP</span>
               <span class="lcd-indicator" id="master-sync-state">FREE-RUN</span>
             </div>
-            <div class="lcd-time" id="master-time">0.00s</div>
+            <div class="lcd-time" id="master-time" aria-live="polite">0.00s</div>
           </div>
 
           <!-- Mic Input Section with Peak LED Ladder -->
           <div class="mic-channel-pod">
             <span class="pod-tag">MIC INPUT</span>
             <div class="meter-and-knob">
-              <div class="led-ladder" id="mic-ladder">
+              <div class="led-ladder" id="mic-ladder" aria-hidden="true">
                 <div class="ladder-dot dot-red"></div>
                 <div class="ladder-dot dot-yellow"></div>
                 <div class="ladder-dot dot-yellow"></div>
@@ -45,7 +45,7 @@
                 <div class="ladder-dot dot-green"></div>
               </div>
               <div class="knob-control">
-                <input type="range" id="input-gain" min="0" max="2" step="0.05" value="1" title="Mic Gain" />
+                <input type="range" id="input-gain" min="0" max="2" step="0.05" value="1" title="Mic Gain" aria-label="Microphone Input Gain" />
                 <span class="control-readout" id="gain-val">1.0x</span>
               </div>
             </div>
@@ -55,10 +55,10 @@
           <div class="monitor-pod">
             <div class="pod-top-row">
               <span class="pod-tag">PHONES</span>
-              <button class="hardware-toggle active" id="monitor-toggle">CUE ON</button>
+              <button class="hardware-toggle active" id="monitor-toggle" aria-label="Toggle Headphone Cue Monitor">CUE ON</button>
             </div>
             <div class="knob-control">
-              <input type="range" id="monitor-vol" min="0" max="1.5" step="0.05" value="1" title="Monitor Level" />
+              <input type="range" id="monitor-vol" min="0" max="1.5" step="0.05" value="1" title="Monitor Level" aria-label="Headphone Monitor Level" />
               <span class="control-readout" id="monitor-val">100%</span>
             </div>
           </div>
@@ -67,25 +67,25 @@
           <div class="metro-pod">
             <div class="pod-top-row">
               <span class="pod-tag">METRONOME</span>
-              <button class="hardware-toggle" id="metro-toggle" title="Toggle Metronome (T)">CLICK</button>
+              <button class="hardware-toggle" id="metro-toggle" title="Toggle Metronome (T)" aria-label="Toggle Metronome (T)">CLICK</button>
             </div>
             <div class="metro-controls-row">
-              <div class="metro-beat-indicators" id="metro-beats">
+              <div class="metro-beat-indicators" id="metro-beats" aria-hidden="true">
                 <span class="beat-led accent"></span>
                 <span class="beat-led"></span>
                 <span class="beat-led"></span>
                 <span class="beat-led"></span>
               </div>
               <div class="bpm-stepper">
-                <button class="bpm-btn" id="bpm-down">-</button>
-                <span class="bpm-readout" id="bpm-val">120</span>
-                <button class="bpm-btn" id="bpm-up">+</button>
-                <button class="tap-tempo-btn" id="tap-tempo-btn" title="Tap Tempo">TAP</button>
+                <button class="bpm-btn" id="bpm-down" aria-label="Decrease BPM">-</button>
+                <span class="bpm-readout" id="bpm-val" aria-live="polite">120</span>
+                <button class="bpm-btn" id="bpm-up" aria-label="Increase BPM">+</button>
+                <button class="tap-tempo-btn" id="tap-tempo-btn" title="Tap Tempo" aria-label="Tap Tempo">TAP</button>
               </div>
             </div>
             <div class="metro-sub-row">
-              <input type="range" id="metro-vol" min="0" max="1.5" step="0.05" value="0.7" title="Metronome Volume" />
-              <button class="cue-toggle-btn active" id="metro-cue-toggle" title="Phones Cue Only">CUE ONLY</button>
+              <input type="range" id="metro-vol" min="0" max="1.5" step="0.05" value="0.7" title="Metronome Volume" aria-label="Metronome Volume" />
+              <button class="cue-toggle-btn active" id="metro-cue-toggle" title="Phones Cue Only" aria-label="Metronome Cue Only">CUE ONLY</button>
             </div>
           </div>
 
@@ -93,15 +93,15 @@
           <div class="routing-inset">
             <div class="routing-row">
               <span class="route-label">IN</span>
-              <select id="mic-select" class="hw-select" title="Microphone Input"></select>
+              <select id="mic-select" class="hw-select" title="Microphone Input" aria-label="Microphone Input Device"></select>
             </div>
             <div class="routing-row">
               <span class="route-label">OUT</span>
-              <select id="speaker-select" class="hw-select" title="Monitor Output"></select>
+              <select id="speaker-select" class="hw-select" title="Monitor Output" aria-label="Monitor Output Device"></select>
             </div>
             <div class="routing-row">
               <span class="route-label">BUF</span>
-              <select id="buffer-size-select" class="hw-select" title="Buffer Size">
+              <select id="buffer-size-select" class="hw-select" title="Buffer Size" aria-label="Audio Buffer Size">
                 <option value="128">128 (~2.7ms)</option>
                 <option value="256" selected>256 (~5.3ms)</option>
                 <option value="512">512 (~10.7ms)</option>
@@ -112,13 +112,13 @@
 
         <!-- Master Performance Pads -->
         <div class="master-action-pads">
-          <button class="master-punch-pad stop-all-pad" id="master-play-btn" title="Stop All Playback (ESC)">
-            <span class="pad-symbol">■</span>
+          <button class="master-punch-pad stop-all-pad" id="master-play-btn" title="Stop All Playback (ESC)" aria-label="Stop All Playback (ESC)">
+            <span class="pad-symbol" aria-hidden="true">■</span>
             <span class="pad-label">STOP ALL</span>
             <span class="pad-key">[ESC]</span>
           </button>
-          <button class="master-punch-pad clear-all-pad" id="clear-all-btn" title="Clear All Tracks (Shift+C)">
-            <span class="pad-symbol">↺</span>
+          <button class="master-punch-pad clear-all-pad" id="clear-all-btn" title="Clear All Tracks (Shift+C)" aria-label="Clear All Tracks (Shift+C)">
+            <span class="pad-symbol" aria-hidden="true">↺</span>
             <span class="pad-label">CLEAR ALL</span>
             <span class="pad-key">[⇧C]</span>
           </button>
