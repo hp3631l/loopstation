@@ -1,0 +1,539 @@
+// RC-Beatbox Hardware Loopstation Controller
+
+const getInvoke = () => {
+  if (window.__TAURI__?.core?.invoke) {
+    return window.__TAURI__.core.invoke;
+  }
+  if (window.__TAURI__?.invoke) {
+    return window.__TAURI__.invoke;
+  }
+  return null;
+};
+
+const invoke = getInvoke();
+
+const CIRCUMFERENCE = 2 * Math.PI * 70; // radius = 70
+
+let activeTrackIdx = 0;
+let monitorActive = true;
+let isMasterPlaying = true;
+
+// DOM Master Elements
+const tracksContainer = document.getElementById("tracks-container");
+const masterTimeDisplay = document.getElementById("master-time");
+const masterSyncState = document.getElementById("master-sync-state");
+const masterPlayBtn = document.getElementById("master-play-btn");
+const clearAllBtn = document.getElementById("clear-all-btn");
+const inputGainSlider = document.getElementById("input-gain");
+const gainValDisplay = document.getElementById("gain-val");
+const monitorToggleBtn = document.getElementById("monitor-toggle");
+const monitorVolSlider = document.getElementById("monitor-vol");
+const monitorValDisplay = document.getElementById("monitor-val");
+const engineStatus = document.getElementById("engine-status");
+const micSelect = document.getElementById("mic-select");
+const speakerSelect = document.getElementById("speaker-select");
+const bufferSelect = document.getElementById("buffer-size-select");
+const latencyDisplay = document.getElementById("latency-display");
+const micLadder = document.getElementById("mic-ladder");
+
+// Audio Device & Latency Routing
+async function loadAudioDevices() {
+  if (!invoke) return;
+  try {
+    const data = await invoke("get_audio_devices");
+    populateDevices(data);
+  } catch (e) {
+    console.error("Failed to load audio devices:", e);
+  }
+}
+
+function populateDevices(data) {
+  micSelect.innerHTML = "";
+  data.inputs.forEach((d) => {
+    const opt = document.createElement("option");
+    opt.value = d.id;
+    opt.textContent = d.is_default ? `${d.display_name} (Active)` : d.display_name;
+    if (d.id === data.current_input) opt.selected = true;
+    micSelect.appendChild(opt);
+  });
+
+  speakerSelect.innerHTML = "";
+  data.outputs.forEach((d) => {
+    const opt = document.createElement("option");
+    opt.value = d.id;
+    opt.textContent = d.is_default ? `${d.display_name} (Active)` : d.display_name;
+    if (d.id === data.current_output) opt.selected = true;
+    speakerSelect.appendChild(opt);
+  });
+
+  if (data.current_buffer_size) {
+    bufferSelect.value = String(data.current_buffer_size);
+    const ms = ((data.current_buffer_size / 48000) * 1000).toFixed(1);
+    latencyDisplay.textContent = `~${ms}ms ROUND-TRIP`;
+  }
+}
+
+async function handleDeviceChange() {
+  if (!invoke) return;
+  try {
+    const updated = await invoke("set_audio_devices", {
+      inputName: micSelect.value || null,
+      outputName: speakerSelect.value || null,
+      bufferSize: parseInt(bufferSelect.value, 10),
+    });
+    populateDevices(updated);
+  } catch (e) {
+    console.error("Failed to update audio device:", e);
+  }
+}
+
+micSelect.addEventListener("change", handleDeviceChange);
+speakerSelect.addEventListener("change", handleDeviceChange);
+bufferSelect.addEventListener("change", handleDeviceChange);
+
+// Build 4 Realistic Hardware Channel Strips
+function buildTrackCards() {
+  tracksContainer.innerHTML = "";
+  for (let i = 0; i < 4; i++) {
+    const strip = document.createElement("div");
+    strip.className = `channel-strip state-empty ${i === 0 ? "selected" : ""}`;
+    strip.id = `track-card-${i}`;
+
+    strip.innerHTML = `
+      <div class="channel-header">
+        <div class="channel-id-row">
+          <span class="channel-num">CH 0${i + 1}</span>
+          <span class="channel-key-hint">[${i + 1}]</span>
+        </div>
+        <span class="master-led" id="master-pill-${i}">MASTER</span>
+      </div>
+
+      <!-- Hardware Rectangular Performance Pad & Linear Loop Bar -->
+      <div class="pad-assembly" id="trigger-btn-${i}">
+        <div class="loop-bar-track">
+          <div class="loop-bar-progress" id="loop-bar-${i}"></div>
+          <div class="loop-bar-ticks">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="hardware-pad" id="pad-body-${i}">
+          <div class="pad-top-meta">
+            <span class="pad-track-badge">PAD ${i + 1}</span>
+            <span class="pad-time-text" id="time-text-${i}">--</span>
+          </div>
+          <span class="pad-state-text" id="state-text-${i}">EMPTY</span>
+          <span class="pad-action-sub" id="trigger-label-${i}">PUNCH REC</span>
+        </div>
+      </div>
+
+      <!-- Tactile Micro-Pads -->
+      <div class="channel-function-row">
+        <button class="func-pad" id="mute-btn-${i}">MUTE</button>
+        <button class="func-pad" id="solo-btn-${i}">SOLO</button>
+        <button class="func-pad" id="undo-btn-${i}" disabled>UNDO</button>
+        <button class="func-pad" id="clear-btn-${i}">CLEAR</button>
+      </div>
+
+      <!-- Physical Studio Mixer Bay -->
+      <div class="mixer-bay">
+        <div class="fader-scale">
+          <span>+6</span>
+          <span>0</span>
+          <span>-6</span>
+          <span>-12</span>
+          <span>-24</span>
+          <span>-∞</span>
+        </div>
+
+        <div class="vertical-fader-assembly">
+          <div class="fader-groove"></div>
+          <input
+            type="range"
+            class="pro-vertical-fader"
+            id="vol-slider-${i}"
+            min="0"
+            max="1.5"
+            step="0.01"
+            value="1.0"
+            orient="vertical"
+          />
+        </div>
+
+        <div class="channel-meter-ladder" id="track-meter-${i}">
+          <div class="meter-segment seg-red"></div>
+          <div class="meter-segment seg-yellow"></div>
+          <div class="meter-segment seg-yellow"></div>
+          <div class="meter-segment seg-green"></div>
+          <div class="meter-segment seg-green"></div>
+          <div class="meter-segment seg-green"></div>
+          <div class="meter-segment seg-green"></div>
+          <div class="meter-segment seg-green"></div>
+        </div>
+      </div>
+
+      <div class="fader-footer">
+        <span class="fader-db-readout" id="vol-val-${i}">0 dB</span>
+      </div>
+    `;
+
+    // Click anywhere on channel strip selects it
+    strip.addEventListener("click", (e) => {
+      if (!e.target.closest("button") && !e.target.closest("input") && !e.target.closest(".pad-assembly")) {
+        selectTrack(i);
+      }
+    });
+
+    // Giant Pad Trigger
+    const triggerBtn = strip.querySelector(`#trigger-btn-${i}`);
+    triggerBtn.addEventListener("click", () => {
+      selectTrack(i);
+      triggerTrack(i);
+    });
+
+    const muteBtn = strip.querySelector(`#mute-btn-${i}`);
+    muteBtn.addEventListener("click", () => toggleMute(i));
+
+    const soloBtn = strip.querySelector(`#solo-btn-${i}`);
+    soloBtn.addEventListener("click", () => toggleSolo(i));
+
+    const undoBtn = strip.querySelector(`#undo-btn-${i}`);
+    undoBtn.addEventListener("click", () => undoTrack(i));
+
+    const clearBtn = strip.querySelector(`#clear-btn-${i}`);
+    clearBtn.addEventListener("click", () => clearTrack(i));
+
+    const volSlider = strip.querySelector(`#vol-slider-${i}`);
+    volSlider.addEventListener("input", (e) => {
+      const vol = parseFloat(e.target.value);
+      const db = vol === 0 ? "-∞ dB" : `${(20 * Math.log10(vol)).toFixed(1)} dB`;
+      strip.querySelector(`#vol-val-${i}`).textContent = db;
+      setTrackVolume(i, vol);
+    });
+
+    tracksContainer.appendChild(strip);
+  }
+}
+
+// Backend Command Invokers
+async function triggerTrack(idx) {
+  if (invoke) {
+    try {
+      await invoke("trigger_track", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function selectTrack(idx) {
+  activeTrackIdx = idx;
+  if (invoke) {
+    try {
+      await invoke("select_track", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  updateActiveCardHighlight();
+}
+
+async function toggleMute(idx) {
+  if (invoke) {
+    try {
+      await invoke("toggle_mute", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function toggleSolo(idx) {
+  if (invoke) {
+    try {
+      await invoke("toggle_solo", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function undoTrack(idx) {
+  if (invoke) {
+    try {
+      await invoke("undo_track", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function clearTrack(idx) {
+  if (invoke) {
+    try {
+      await invoke("clear_track", { trackId: idx });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function setTrackVolume(idx, vol) {
+  if (invoke) {
+    try {
+      await invoke("set_track_volume", { trackId: idx, volume: vol });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function masterPlayStop() {
+  if (invoke) {
+    try {
+      await invoke("master_play_stop");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+async function clearAll() {
+  if (invoke) {
+    try {
+      await invoke("clear_all");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+// Master Controls Bindings
+masterPlayBtn.addEventListener("click", masterPlayStop);
+clearAllBtn.addEventListener("click", clearAll);
+
+inputGainSlider.addEventListener("input", (e) => {
+  const gain = parseFloat(e.target.value);
+  gainValDisplay.textContent = `${gain.toFixed(1)}x`;
+  if (invoke) {
+    invoke("set_input_gain", { gain });
+  }
+});
+
+monitorToggleBtn.addEventListener("click", () => {
+  monitorActive = !monitorActive;
+  monitorToggleBtn.classList.toggle("active", monitorActive);
+  monitorToggleBtn.textContent = monitorActive ? "CUE ON" : "CUE OFF";
+  if (invoke) {
+    invoke("set_monitor_mic", { enable: monitorActive });
+  }
+});
+
+monitorVolSlider.addEventListener("input", (e) => {
+  const vol = parseFloat(e.target.value);
+  monitorValDisplay.textContent = `${Math.round(vol * 100)}%`;
+  if (invoke) {
+    invoke("set_monitor_volume", { volume: vol });
+  }
+});
+
+function updateActiveCardHighlight() {
+  for (let i = 0; i < 4; i++) {
+    const strip = document.getElementById(`track-card-${i}`);
+    if (strip) {
+      strip.classList.toggle("selected", i === activeTrackIdx);
+    }
+  }
+}
+
+// Keyboard shortcuts for hands-on beatbox looping
+window.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+
+  const key = e.key;
+
+  if (key === "1") selectTrack(0);
+  else if (key === "2") selectTrack(1);
+  else if (key === "3") selectTrack(2);
+  else if (key === "4") selectTrack(3);
+  else if (key === " ") {
+    e.preventDefault();
+    triggerTrack(activeTrackIdx);
+  } else if (key === "m" || key === "M") {
+    toggleMute(activeTrackIdx);
+  } else if (key === "s" || key === "S") {
+    toggleSolo(activeTrackIdx);
+  } else if (key === "u" || key === "U") {
+    undoTrack(activeTrackIdx);
+  } else if (key === "c" || key === "C") {
+    if (e.shiftKey) {
+      clearAll();
+    } else {
+      clearTrack(activeTrackIdx);
+    }
+  } else if (key === "Escape") {
+    masterPlayStop();
+  }
+});
+
+// Telemetry Polling Loop (smooth 30ms updates)
+async function pollLoop() {
+  if (invoke) {
+    try {
+      const state = await invoke("get_looper_state");
+      renderState(state);
+    } catch (e) {
+      engineStatus.classList.remove("online");
+    }
+  }
+  requestAnimationFrame(() => setTimeout(pollLoop, 30));
+}
+
+function renderState(snap) {
+  engineStatus.classList.add("online");
+
+  activeTrackIdx = snap.active_track_idx;
+  isMasterPlaying = snap.is_master_playing;
+
+  // Master Stop / Play button state
+  if (isMasterPlaying) {
+    masterPlayBtn.classList.remove("paused");
+    masterPlayBtn.querySelector(".pad-symbol").textContent = "■";
+    masterPlayBtn.querySelector(".pad-label").textContent = "STOP ALL";
+  } else {
+    masterPlayBtn.classList.add("paused");
+    masterPlayBtn.querySelector(".pad-symbol").textContent = "▶";
+    masterPlayBtn.querySelector(".pad-label").textContent = "RESUME";
+  }
+
+  // Update Master Mic LED Ladder (6 dots: 3 green, 2 yellow, 1 red)
+  if (micLadder) {
+    const dots = micLadder.querySelectorAll(".ladder-dot");
+    const peak = snap.mic_peak_level;
+    dots[5].classList.toggle("on", peak > 0.05); // green 1
+    dots[4].classList.toggle("on", peak > 0.20); // green 2
+    dots[3].classList.toggle("on", peak > 0.40); // green 3
+    dots[2].classList.toggle("on", peak > 0.65); // yellow 1
+    dots[1].classList.toggle("on", peak > 0.85); // yellow 2
+    dots[0].classList.toggle("on", peak > 0.95); // red clip
+  }
+
+  // Master Loop Time & Status
+  let maxLen = 0;
+  if (snap.master_track_idx !== null && snap.tracks[snap.master_track_idx]) {
+    maxLen = snap.tracks[snap.master_track_idx].length_seconds;
+    masterSyncState.textContent = `SYNC CH 0${snap.master_track_idx + 1}`;
+    masterSyncState.style.color = "#f59e0b";
+  } else {
+    masterSyncState.textContent = "FREE-RUN";
+    masterSyncState.style.color = "#64748b";
+  }
+  masterTimeDisplay.textContent = `${maxLen.toFixed(2)}s`;
+
+  // Render Channel Strips
+  snap.tracks.forEach((t, i) => {
+    const strip = document.getElementById(`track-card-${i}`);
+    if (!strip) return;
+
+    strip.classList.toggle("selected", i === activeTrackIdx);
+
+    // Master Indicator LED
+    const masterPill = document.getElementById(`master-pill-${i}`);
+    if (masterPill) {
+      masterPill.style.display = snap.master_track_idx === i ? "inline-block" : "none";
+    }
+
+    // State classes on the entire strip
+    const stateClassMap = {
+      Empty: "state-empty",
+      QueuedRecord: "state-queued",
+      Recording: "state-recording",
+      Playing: "state-playing",
+      Overdubbing: "state-overdubbing",
+      Muted: "state-muted",
+    };
+
+    Object.values(stateClassMap).forEach((cls) => strip.classList.remove(cls));
+    strip.classList.add(stateClassMap[t.state] || "state-empty");
+
+    // Center state text
+    const stateText = document.getElementById(`state-text-${i}`);
+    if (stateText) {
+      const stateLabels = {
+        Empty: "EMPTY",
+        QueuedRecord: "WAIT",
+        Recording: "RECORD",
+        Playing: "PLAY",
+        Overdubbing: "OVERDUB",
+        Muted: "MUTED",
+      };
+      stateText.textContent = stateLabels[t.state] || "EMPTY";
+    }
+
+    // Action sub label
+    const triggerLabel = document.getElementById(`trigger-label-${i}`);
+    if (triggerLabel) {
+      const btnLabels = {
+        Empty: "PUNCH REC",
+        QueuedRecord: "SYNCING...",
+        Recording: "PUNCH OUT",
+        Playing: "OVERDUB",
+        Overdubbing: "PLAY",
+        Muted: "UNMUTE",
+      };
+      triggerLabel.textContent = btnLabels[t.state] || "REC";
+    }
+
+    // Center time text
+    const timeText = document.getElementById(`time-text-${i}`);
+    if (timeText) {
+      timeText.textContent = t.length_seconds > 0 ? `${t.length_seconds.toFixed(1)}s` : "--";
+    }
+
+    // Loop linear position bar
+    const loopBar = document.getElementById(`loop-bar-${i}`);
+    if (loopBar) {
+      loopBar.style.width = `${(t.playhead_norm * 100).toFixed(1)}%`;
+    }
+
+    // Channel 8-Segment Vertical LED Meter
+    const meter = document.getElementById(`track-meter-${i}`);
+    if (meter) {
+      const segs = meter.querySelectorAll(".meter-segment");
+      const peak = t.peak_level;
+      // Index 7 is bottom green, index 0 is top red
+      segs[7].classList.toggle("lit", peak > 0.05);
+      segs[6].classList.toggle("lit", peak > 0.15);
+      segs[5].classList.toggle("lit", peak > 0.30);
+      segs[4].classList.toggle("lit", peak > 0.45);
+      segs[3].classList.toggle("lit", peak > 0.60);
+      segs[2].classList.toggle("lit", peak > 0.75);
+      segs[1].classList.toggle("lit", peak > 0.88);
+      segs[0].classList.toggle("lit", peak > 0.96);
+    }
+
+    // Mute button
+    const muteBtn = document.getElementById(`mute-btn-${i}`);
+    if (muteBtn) {
+      muteBtn.classList.toggle("active-mute", t.is_muted);
+    }
+
+    // Solo button
+    const soloBtn = document.getElementById(`solo-btn-${i}`);
+    if (soloBtn) {
+      soloBtn.classList.toggle("active-solo", t.is_solo);
+    }
+
+    // Undo button
+    const undoBtn = document.getElementById(`undo-btn-${i}`);
+    if (undoBtn) {
+      undoBtn.disabled = !t.has_undo;
+      undoBtn.classList.toggle("active-undo", t.has_undo);
+    }
+  });
+}
+
+// Start
+buildTrackCards();
+updateActiveCardHighlight();
+loadAudioDevices();
+pollLoop();

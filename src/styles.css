@@ -1,0 +1,881 @@
+:root {
+  --chassis-bg: #000000;
+  --chassis-metal: #060606;
+  --chassis-panel: #0c0c0c;
+  --chassis-subpanel: #111111;
+  --chassis-border: #1f1f1f;
+  --chassis-border-hi: #2b2b2b;
+  --recessed-bay: #000000;
+
+  --pad-empty-bg: #0e0e0e;
+  --pad-empty-border: #222222;
+  --pad-empty-text: #666666;
+
+  --color-rec: #ef4444;
+  --color-rec-pad: #7f1d1d;
+  --color-play: #22c55e;
+  --color-play-pad: #14532d;
+  --color-dub: #f97316;
+  --color-dub-pad: #7c2d12;
+  --color-queued: #eab308;
+  --color-muted: #374151;
+
+  --text-primary: #e5e5e5;
+  --text-muted: #737373;
+  --text-dim: #444444;
+  --text-hi: #ffffff;
+
+  --screen-amber: #f59e0b;
+  --screen-green: #22c55e;
+  --screen-cyan: #38bdf8;
+
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+  user-select: none;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+body {
+  background: var(--chassis-bg);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   MAIN HARDWARE CHASSIS
+   ========================================================================== */
+.chassis {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 10px;
+  gap: 8px;
+  background: #050505;
+  border: 1px solid #1a1a1a;
+}
+
+/* ==========================================================================
+   TOP MASTER CONSOLE
+   ========================================================================== */
+.master-console {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chassis-panel);
+  border: 1px solid var(--chassis-border);
+  border-top: 2px solid var(--chassis-border-hi);
+  padding: 8px 14px;
+}
+
+.brand-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.power-led {
+  width: 8px;
+  height: 8px;
+  background: #262626;
+  border: 1px solid #141414;
+}
+
+.power-led.online {
+  background: var(--screen-green);
+  box-shadow: 0 0 6px var(--screen-green);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.brand-sub {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.console-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Master LCD Screen */
+.lcd-screen {
+  background: #000000;
+  border: 1px solid #222222;
+  border-left: 2px solid #333333;
+  padding: 6px 12px;
+  min-width: 140px;
+}
+
+.lcd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #141414;
+  padding-bottom: 2px;
+}
+
+.lcd-title {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.lcd-indicator {
+  font-size: 0.55rem;
+  font-family: monospace;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--screen-amber);
+}
+
+.lcd-time {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* Mic Channel Pod & Phones Pod */
+.mic-channel-pod, .monitor-pod {
+  display: flex;
+  flex-direction: column;
+  background: #080808;
+  border: 1px solid #1c1c1c;
+  padding: 6px 10px;
+  gap: 4px;
+}
+
+.pod-tag {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.pod-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hardware-toggle {
+  background: #141414;
+  border: 1px solid #262626;
+  color: #888888;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.hardware-toggle.active {
+  background: #1e3a5f;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.meter-and-knob {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* LED Ladder Meter (Square LEDs) */
+.led-ladder {
+  display: flex;
+  gap: 2px;
+  background: #000000;
+  padding: 3px 4px;
+  border: 1px solid #1a1a1a;
+}
+
+.ladder-dot {
+  width: 5px;
+  height: 10px;
+  background: #181818;
+}
+
+.dot-green.on {
+  background: var(--screen-green);
+  box-shadow: 0 0 4px var(--screen-green);
+}
+
+.dot-yellow.on {
+  background: var(--screen-amber);
+  box-shadow: 0 0 4px var(--screen-amber);
+}
+
+.dot-red.on {
+  background: var(--color-rec);
+  box-shadow: 0 0 5px var(--color-rec);
+}
+
+.knob-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.knob-control input[type="range"] {
+  width: 55px;
+  height: 3px;
+  background: #1c1c1c;
+  outline: none;
+  accent-color: #ffffff;
+}
+
+.control-readout {
+  font-size: 0.65rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 30px;
+}
+
+/* Hardware Routing Inset */
+.routing-inset {
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  border: 1px solid #1a1a1a;
+  padding: 4px 8px;
+  gap: 3px;
+}
+
+.routing-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.route-label {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  min-width: 24px;
+}
+
+.hw-select {
+  background: #0c0c0c;
+  border: 1px solid #242424;
+  color: #e5e5e5;
+  font-size: 0.62rem;
+  font-family: monospace;
+  padding: 2px 4px;
+  max-width: 155px;
+  outline: none;
+  cursor: pointer;
+}
+
+.hw-select:focus {
+  border-color: #ffffff;
+}
+
+/* Master Hardware Punch Pads */
+.master-action-pads {
+  display: flex;
+  gap: 6px;
+}
+
+.master-punch-pad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  min-width: 86px;
+  cursor: pointer;
+  border: 1px solid #282828;
+  outline: none;
+}
+
+.master-punch-pad:active {
+  transform: translateY(1px);
+}
+
+.stop-all-pad {
+  background: #7f1d1d;
+  border-color: #b91c1c;
+  border-top: 2px solid #ef4444;
+  color: #ffffff;
+}
+
+.stop-all-pad.paused {
+  background: #14532d;
+  border-color: #15803d;
+  border-top: 2px solid #22c55e;
+}
+
+.clear-all-pad {
+  background: #141414;
+  border-color: #242424;
+  border-top: 2px solid #383838;
+  color: #a3a3a3;
+}
+
+.clear-all-pad:hover {
+  background: #1f1f1f;
+  color: #ffffff;
+  border-color: #444444;
+}
+
+.pad-symbol {
+  font-size: 0.85rem;
+}
+
+.pad-label {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.pad-key {
+  font-size: 0.52rem;
+  font-family: monospace;
+  color: #888888;
+}
+
+/* ==========================================================================
+   4 CHANNEL STRIPS DECK (HARDWARE INSTRUMENT STYLE)
+   ========================================================================== */
+.channels-deck {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.channel-strip {
+  background: var(--chassis-panel);
+  border: 1px solid var(--chassis-border);
+  border-top: 2px solid #282828;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.channel-strip.selected {
+  border-color: #404040;
+  border-top-color: #ffffff;
+  background: #0e0e0e;
+}
+
+/* Channel Header */
+.channel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 4px;
+}
+
+.channel-id-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.channel-num {
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+}
+
+.channel-key-hint {
+  font-size: 0.6rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.master-led {
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--screen-amber);
+  background: #1a1306;
+  border: 1px solid var(--screen-amber);
+  padding: 1px 4px;
+  display: none;
+}
+
+/* ==========================================================================
+   HARDWARE PERFORMANCE PAD & RECTANGULAR LOOP BAR
+   ========================================================================== */
+.pad-assembly {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  background: #000000;
+  border: 1px solid #1a1a1a;
+  padding: 5px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.95);
+}
+
+/* Linear Loop Position Bar */
+.loop-bar-track {
+  position: relative;
+  height: 6px;
+  background: #080808;
+  border: 1px solid #1a1a1a;
+  overflow: hidden;
+}
+
+.loop-bar-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: #333333;
+  transition: width 0.03s linear, background-color 0.15s ease;
+}
+
+.loop-bar-ticks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.loop-bar-ticks span {
+  width: 1px;
+  height: 100%;
+  background: #181818;
+}
+
+/* Chunky Tactile Silicone Rubber Trigger Pad */
+.hardware-pad {
+  background: #18191c;
+  border: 2px solid #2d3038;
+  border-top: 2px solid #3d424d;
+  border-bottom: 3px solid #0d0e11;
+  border-radius: 4px !important;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 100px;
+  cursor: pointer;
+  /* Thick 3D silicone cushion: elevated shadow + top highlight + soft matte glow */
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.18),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.08s ease, background 0.12s ease;
+}
+
+/* Highly responsive tactile physical push states */
+.pad-assembly:hover .hardware-pad {
+  filter: brightness(1.12);
+  border-top-color: #4f5563;
+}
+
+.pad-assembly:active .hardware-pad {
+  transform: translateY(2px) scale(0.985);
+  border-bottom-width: 1px;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.9),
+    inset 0 2px 5px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.pad-top-meta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.55rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #71717a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 3px;
+  margin-bottom: 2px;
+}
+
+.pad-track-badge {
+  letter-spacing: 1px;
+}
+
+.pad-time-text {
+  color: #a1a1aa;
+}
+
+.pad-state-text {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: #71717a;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.pad-action-sub {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #52525b;
+  text-transform: uppercase;
+}
+
+/* Tactile Silicone LED Hardware States */
+.state-empty .hardware-pad {
+  background: #141518;
+  border-color: #242730;
+  border-top-color: #343845;
+}
+
+.state-recording .hardware-pad {
+  background: radial-gradient(circle at 50% 30%, #ef4444 0%, #b91c1c 45%, #7f1d1d 95%);
+  border-color: #f87171;
+  border-top-color: #fca5a5;
+  border-bottom-color: #450a0a;
+  box-shadow: 
+    0 0 16px rgba(239, 68, 68, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px rgba(254, 202, 202, 0.3);
+}
+.state-recording .loop-bar-progress {
+  background: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
+}
+.state-recording .pad-state-text {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px #000;
+}
+.state-recording .pad-action-sub {
+  color: #fee2e2;
+}
+
+.state-playing .hardware-pad {
+  background: radial-gradient(circle at 50% 30%, #22c55e 0%, #15803d 45%, #14532d 95%);
+  border-color: #4ade80;
+  border-top-color: #86efac;
+  border-bottom-color: #052e16;
+  box-shadow: 
+    0 0 16px rgba(34, 197, 94, 0.55),
+    0 4px 8px rgba(0, 0, 0, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px rgba(187, 247, 208, 0.3);
+}
+.state-playing .loop-bar-progress {
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+.state-playing .pad-state-text {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px #000;
+}
+.state-playing .pad-action-sub {
+  color: #dcfce7;
+}
+
+.state-overdubbing .hardware-pad {
+  background: radial-gradient(circle at 50% 30%, #f97316 0%, #c2410c 45%, #7c2d12 95%);
+  border-color: #fb923c;
+  border-top-color: #fdba74;
+  border-bottom-color: #431407;
+  box-shadow: 
+    0 0 16px rgba(249, 115, 22, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px rgba(254, 215, 170, 0.3);
+}
+.state-overdubbing .loop-bar-progress {
+  background: #f97316;
+  box-shadow: 0 0 6px #f97316;
+}
+.state-overdubbing .pad-state-text {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 1px 2px #000;
+}
+.state-overdubbing .pad-action-sub {
+  color: #ffedd5;
+}
+
+.state-queued .hardware-pad {
+  background: radial-gradient(circle at 50% 30%, #eab308 0%, #a16207 45%, #451a03 95%);
+  border-color: #fde047;
+  border-top-color: #fef08a;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.5);
+}
+.state-queued .pad-state-text {
+  color: #fef08a;
+}
+
+.state-muted .hardware-pad {
+  background: #18181b;
+  border-color: #27272a;
+  border-top-color: #3f3f46;
+  opacity: 0.6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   TACTILE MICRO-PADS STRIP (MUTE, SOLO, UNDO, CLEAR)
+   ========================================================================== */
+.channel-function-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.func-pad {
+  background: #121212;
+  border: 1px solid #222222;
+  border-top: 2px solid #2e2e2e;
+  color: #888888;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 6px 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.func-pad:hover {
+  background: #1c1c1c;
+  color: #ffffff;
+}
+
+.func-pad:active {
+  transform: translateY(1px);
+}
+
+.func-pad.active-mute {
+  background: #7f1d1d;
+  border-color: #dc2626;
+  border-top-color: #ef4444;
+  color: #ffffff;
+}
+
+.func-pad.active-solo {
+  background: #713f12;
+  border-color: #ca8a04;
+  border-top-color: #eab308;
+  color: #ffffff;
+}
+
+.func-pad.active-undo {
+  background: #1e3a5f;
+  border-color: #0284c7;
+  border-top-color: #38bdf8;
+  color: #ffffff;
+}
+
+.func-pad:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   HARDWARE MIXER BAY & VERTICAL FADER
+   ========================================================================== */
+.mixer-bay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #000000;
+  border: 1px solid #1a1a1a;
+  padding: 10px 8px;
+  margin-top: auto;
+}
+
+.fader-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
+  font-size: 0.5rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #555555;
+  text-align: right;
+}
+
+.vertical-fader-assembly {
+  position: relative;
+  width: 36px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fader-groove {
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  background: #000000;
+  border: 1px solid #171717;
+}
+
+/* Custom styled vertical hardware fader slider */
+.pro-vertical-fader {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 36px;
+  height: 100%;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  outline: none;
+}
+
+.pro-vertical-fader::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 34px;
+  height: 16px;
+  background: #1f1f1f;
+  border: 1px solid #404040;
+  border-top: 1px solid #666666;
+  border-bottom: 2px solid #000000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  cursor: grab;
+}
+
+.pro-vertical-fader::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  background: #2a2a2a;
+}
+
+/* Multi-Segment Vertical LED Meter Strip */
+.channel-meter-ladder {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  height: 120px;
+  background: #000000;
+  padding: 2px 3px;
+  border: 1px solid #171717;
+}
+
+.meter-segment {
+  width: 7px;
+  flex: 1;
+  background: #121212;
+}
+
+.seg-green.lit {
+  background: var(--screen-green);
+  box-shadow: 0 0 3px var(--screen-green);
+}
+
+.seg-yellow.lit {
+  background: var(--screen-amber);
+  box-shadow: 0 0 3px var(--screen-amber);
+}
+
+.seg-red.lit {
+  background: var(--color-rec);
+  box-shadow: 0 0 4px var(--color-rec);
+}
+
+.fader-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.fader-db-readout {
+  font-size: 0.65rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #cccccc;
+  background: #000000;
+  border: 1px solid #1c1c1c;
+  padding: 2px 6px;
+}
+
+/* ==========================================================================
+   CONSOLE FOOTER
+   ========================================================================== */
+.console-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chassis-panel);
+  border: 1px solid var(--chassis-border);
+  padding: 5px 12px;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.footer-shortcuts {
+  display: flex;
+  gap: 8px;
+}
+
+.key-cap {
+  background: #171717;
+  border: 1px solid #2a2a2a;
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  margin-right: 2px;
+}
+
+.footer-spec {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  font-size: 0.58rem;
+  color: #666666;
+  font-weight: 700;
+}
+
+.spec-divider {
+  color: #262626;
+}
