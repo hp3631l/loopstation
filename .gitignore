@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Chat histories and transcripts
+CHAT_HISTORY.md
+*chat_history*
+
