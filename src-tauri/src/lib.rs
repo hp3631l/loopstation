@@ -121,8 +121,7 @@ fn retrigger_track(track_id: usize, state: State<AppState>) -> Result<(), String
 fn set_track_mode(track_id: usize, mode: String, state: State<AppState>) -> Result<(), String> {
     let lock = state.engine.lock().map_err(|e| e.to_string())?;
     let playback_mode = match mode.as_str() {
-        "TotalMpc" => audio::types::PlaybackMode::TotalMpc,
-        "PartialMpc" => audio::types::PlaybackMode::PartialMpc,
+        "Mpc" | "TotalMpc" => audio::types::PlaybackMode::Mpc,
         _ => audio::types::PlaybackMode::Play,
     };
     if let Some(engine) = lock.as_ref() {

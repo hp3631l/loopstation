@@ -157,15 +157,15 @@ mod tests {
         assert_eq!(track.length_frames, 100);
         assert_eq!(track.state, TrackState::Playing);
 
-        // Test 1: TotalMpc (One-Shot) plays to end and stops (is_paused = true)
-        track.mode = PlaybackMode::TotalMpc;
+        // Test: Mpc (One-Shot) plays to end and stops (is_paused = true)
+        track.mode = PlaybackMode::Mpc;
         track.playhead = 0;
         track.is_paused = false;
 
         for _ in 0..100 {
             let (_, _, _) = track.read_and_advance(false);
         }
-        // At frame 100, playhead wrapped and TotalMpc stops the track
+        // At frame 100, playhead wrapped and Mpc stops the track
         assert!(track.is_paused);
         // Advancing while paused yields silent 0.0
         let (l, r, _) = track.read_and_advance(false);

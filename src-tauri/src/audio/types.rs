@@ -12,9 +12,8 @@ pub enum TrackState {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PlaybackMode {
-    Play,       // Standard looping playback
-    TotalMpc,   // One-shot: plays from 0.0s to end once and stops; triggers retrigger
-    PartialMpc, // Gate: plays only while held down; pauses/mutes on release
+    Play, // Standard looping playback
+    Mpc,  // MPC One-Shot: plays once from 0.0s to end and stops; hits retrigger
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

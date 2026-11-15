@@ -124,10 +124,10 @@ function buildTrackCards() {
         <span class="master-led" id="master-pill-${i}">MASTER</span>
       </div>
 
-      <!-- Playback Mode Selector: PLAY (Loop) | TOTAL MPC (One-Shot) | PART MPC (Gate) -->
+      <!-- Playback Mode Selector: PLAY (Loop) | MPC (One-Shot) -->
       <div class="channel-mode-row">
         <span class="mode-badge-label">MODE</span>
-        <button class="channel-mode-btn mode-play" id="mode-btn-${i}" title="Toggle: Play (Loop) / Total MPC (One-Shot) / Part MPC (Gate)">PLAY</button>
+        <button class="channel-mode-btn mode-play" id="mode-btn-${i}" title="Toggle: PLAY (Loop) / MPC (One-Shot)">PLAY</button>
       </div>
 
       <!-- Boss RC-505 Circular Silicone Performance Pad & Radial Loop Ring -->
@@ -212,27 +212,14 @@ function buildTrackCards() {
       const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
       const mode = trackModes[i] || "Play";
 
-      if (isRecorded && (mode === "TotalMpc" || mode === "PartialMpc")) {
+      if (isRecorded && mode === "Mpc") {
         retriggerTrack(i);
       } else {
         triggerTrack(i);
       }
     };
 
-    const onPadRelease = (e) => {
-      const mode = trackModes[i] || "Play";
-      if (mode === "PartialMpc") {
-        const trackSnap = lastTelemetryTracks[i];
-        if (trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Recording") {
-          setTrackPaused(i, true);
-        }
-      }
-    };
-
     triggerBtn.addEventListener("pointerdown", onPadPress);
-    triggerBtn.addEventListener("pointerup", onPadRelease);
-    triggerBtn.addEventListener("pointerleave", onPadRelease);
-    triggerBtn.addEventListener("pointercancel", onPadRelease);
 
     const modeBtn = strip.querySelector(`#mode-btn-${i}`);
     modeBtn.addEventListener("click", () => {
@@ -500,7 +487,7 @@ async function retriggerTrack(idx) {
   }
 }
 
-// Track Playback Modes: 'Play' (Loop) | 'TotalMpc' (One-Shot) | 'PartialMpc' (Gate)
+// Track Playback Modes: 'Play' (Loop) | 'Mpc' (One-Shot)
 const trackModes = ["Play", "Play", "Play", "Play"];
 
 async function setTrackMode(idx, mode) {
@@ -517,27 +504,18 @@ async function setTrackMode(idx, mode) {
 
 function cycleTrackMode(idx) {
   const current = trackModes[idx] || "Play";
-  const nextMap = {
-    Play: "TotalMpc",
-    TotalMpc: "PartialMpc",
-    PartialMpc: "Play",
-  };
-  const next = nextMap[current] || "Play";
+  const next = current === "Play" ? "Mpc" : "Play";
   setTrackMode(idx, next);
 }
 
 function updateModeButtonUI(idx, mode) {
   const btn = document.getElementById(`mode-btn-${idx}`);
   if (!btn) return;
-  btn.classList.remove("mode-play", "mode-total", "mode-partial");
-  if (mode === "TotalMpc") {
-    btn.textContent = "TOTAL MPC";
-    btn.classList.add("mode-total");
-    btn.title = "One-Shot: Plays sample once to end and stops; strike cuts & retriggers";
-  } else if (mode === "PartialMpc") {
-    btn.textContent = "PART MPC";
-    btn.classList.add("mode-partial");
-    btn.title = "Gate: Plays only while pad/key is held down, stops immediately on release";
+  btn.classList.remove("mode-play", "mode-mpc", "mode-total", "mode-partial");
+  if (mode === "Mpc") {
+    btn.textContent = "MPC";
+    btn.classList.add("mode-mpc");
+    btn.title = "One-Shot: Plays sample once to end and stops; strike cuts & retriggers from start";
   } else {
     btn.textContent = "PLAY";
     btn.classList.add("mode-play");
@@ -556,7 +534,7 @@ window.addEventListener("keydown", (e) => {
   else if (key === "3") selectTrack(2);
   else if (key === "4") selectTrack(3);
   else if (key === "o" || key === "O") {
-    // Cycle playback mode for active channel: PLAY -> TOTAL MPC -> PART MPC
+    // Cycle playback mode for active channel: PLAY <-> MPC
     cycleTrackMode(activeTrackIdx);
   } else if (key === " ") {
     e.preventDefault();
@@ -565,7 +543,7 @@ window.addEventListener("keydown", (e) => {
     const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
     const mode = trackModes[activeTrackIdx] || "Play";
 
-    if (isRecorded && (mode === "TotalMpc" || mode === "PartialMpc")) {
+    if (isRecorded && mode === "Mpc") {
       retriggerTrack(activeTrackIdx);
     } else {
       triggerTrack(activeTrackIdx);
@@ -632,27 +610,6 @@ window.addEventListener("keyup", (e) => {
     if (isPKeyHeld) {
       isPKeyHeld = false;
       setTrackPaused(activeTrackIdx, false);
-    }
-  } else if (key === " " || key.toLowerCase() === mpcKey.toLowerCase()) {
-    // If active track is in PartialMpc (Gate) mode, stop playback on key release
-    const trackSnap = lastTelemetryTracks[activeTrackIdx];
-    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord" && trackSnap.state !== "Recording";
-    const mode = trackModes[activeTrackIdx] || "Play";
-    if (isRecorded && mode === "PartialMpc") {
-      setTrackPaused(activeTrackIdx, true);
-    }
-  }
-});
-
-// Global window pointerup: ensures Partial MPC reliably stops if user drags cursor outside pad
-window.addEventListener("pointerup", () => {
-  for (let i = 0; i < 4; i++) {
-    const mode = trackModes[i] || "Play";
-    if (mode === "PartialMpc") {
-      const trackSnap = lastTelemetryTracks[i];
-      if (trackSnap && trackSnap.length_seconds > 0) {
-        setTrackPaused(i, true);
-      }
     }
   }
 });

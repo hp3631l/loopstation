@@ -70,8 +70,8 @@ impl LoopTrack {
             self.apply_seam_crossfade();
             self.playhead = 0;
             self.state = TrackState::Playing;
-            // If in Total MPC or Partial MPC, stop immediately after punch-out recording
-            if self.mode == PlaybackMode::TotalMpc || self.mode == PlaybackMode::PartialMpc {
+            // If in MPC mode, stop immediately after punch-out recording (one-shot ready)
+            if self.mode == PlaybackMode::Mpc {
                 self.is_paused = true;
             }
         } else if self.length_frames == 0 {
@@ -157,8 +157,8 @@ impl LoopTrack {
         self.playhead += 1;
         let wrapped = if self.playhead >= self.length_frames {
             self.playhead = 0;
-            if self.mode == PlaybackMode::TotalMpc || self.mode == PlaybackMode::PartialMpc {
-                // In Total MPC and Partial MPC, play once to the end and stop!
+            if self.mode == PlaybackMode::Mpc {
+                // In MPC mode, play once to the end and stop!
                 self.is_paused = true;
             }
             true

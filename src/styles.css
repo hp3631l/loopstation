@@ -589,16 +589,10 @@ body {
   color: #4ade80;
 }
 
-.channel-mode-btn.mode-total {
+.channel-mode-btn.mode-mpc {
   background: #1e1103;
   border-color: #d97706;
   color: #fbbf24;
-}
-
-.channel-mode-btn.mode-partial {
-  background: #081d29;
-  border-color: #0284c7;
-  color: #38bdf8;
 }
 
 /* ==========================================================================
