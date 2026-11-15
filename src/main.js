@@ -617,7 +617,7 @@ function renderState(snap) {
   });
 }
 
-// Update Checker logic
+// In-Place Update Checker & Self-Updater
 const CURRENT_VERSION = "v0.1.0";
 const GITHUB_REPO = "hp3631l/loopstation";
 const checkUpdateBtn = document.getElementById("check-update-btn");
@@ -627,10 +627,11 @@ if (versionTag) {
   versionTag.textContent = CURRENT_VERSION;
 }
 
-let latestReleaseUrl = `https://github.com/${GITHUB_REPO}/releases/latest`;
+let latestDownloadUrl = null;
+let isUpdating = false;
 
 async function checkForUpdates(manual = false) {
-  if (!checkUpdateBtn) return;
+  if (!checkUpdateBtn || isUpdating) return;
   checkUpdateBtn.textContent = "CHECKING...";
   checkUpdateBtn.classList.remove("available", "up-to-date");
 
@@ -639,12 +640,21 @@ async function checkForUpdates(manual = false) {
     if (!res.ok) throw new Error("Network error");
     const release = await res.json();
     const latestTag = release.tag_name || "";
-    latestReleaseUrl = release.html_url || latestReleaseUrl;
 
-    if (latestTag && latestTag !== CURRENT_VERSION) {
+    // Find the Linux AppImage asset
+    if (release.assets && Array.isArray(release.assets)) {
+      const appImageAsset = release.assets.find(
+        (a) => a.name && a.name.endsWith(".AppImage")
+      );
+      if (appImageAsset) {
+        latestDownloadUrl = appImageAsset.browser_download_url;
+      }
+    }
+
+    if (latestTag && latestTag !== CURRENT_VERSION && latestDownloadUrl) {
       checkUpdateBtn.textContent = `UPDATE (${latestTag})`;
       checkUpdateBtn.classList.add("available");
-      checkUpdateBtn.title = `Click to open download page for ${latestTag}`;
+      checkUpdateBtn.title = `Click to automatically install ${latestTag} in-place`;
     } else {
       checkUpdateBtn.textContent = "UP TO DATE";
       checkUpdateBtn.classList.add("up-to-date");
@@ -662,9 +672,23 @@ async function checkForUpdates(manual = false) {
 }
 
 if (checkUpdateBtn) {
-  checkUpdateBtn.addEventListener("click", () => {
-    if (checkUpdateBtn.classList.contains("available")) {
-      window.open(latestReleaseUrl, "_blank");
+  checkUpdateBtn.addEventListener("click", async () => {
+    if (isUpdating) return;
+
+    if (checkUpdateBtn.classList.contains("available") && latestDownloadUrl) {
+      if (!invoke) return;
+      isUpdating = true;
+      checkUpdateBtn.textContent = "UPDATING...";
+      checkUpdateBtn.classList.add("available");
+
+      try {
+        await invoke("apply_in_place_update", { downloadUrl: latestDownloadUrl });
+      } catch (e) {
+        console.error("Update failed:", e);
+        checkUpdateBtn.textContent = "ERR UPDATING";
+        isUpdating = false;
+        setTimeout(() => checkForUpdates(true), 4000);
+      }
     } else {
       checkForUpdates(true);
     }

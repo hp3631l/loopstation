@@ -227,6 +227,56 @@ fn set_metro_cue_only(cue_only: bool, state: State<AppState>) -> Result<(), Stri
     }
 }
 
+#[tauri::command]
+async fn apply_in_place_update(download_url: String) -> Result<String, String> {
+    use std::fs;
+    use std::process::Command;
+
+    // Detect target running binary
+    #[cfg(target_os = "linux")]
+    {
+        let target_path = if let Ok(appimage) = std::env::var("APPIMAGE") {
+            std::path::PathBuf::from(appimage)
+        } else if let Ok(curr_exe) = std::env::current_exe() {
+            curr_exe
+        } else {
+            return Err("Could not detect running executable path".to_string());
+        };
+
+        let temp_download = target_path.with_extension("update_temp");
+
+        // Download via curl (which is preinstalled on all Linux distros)
+        let status = Command::new("curl")
+            .args(["-L", "-o", temp_download.to_str().unwrap(), &download_url])
+            .status()
+            .map_err(|e| format!("Failed to download update: {}", e))?;
+
+        if !status.success() {
+            let _ = fs::remove_file(&temp_download);
+            return Err("Download process failed".to_string());
+        }
+
+        // chmod +x on downloaded file
+        use std::os::unix::fs::PermissionsExt;
+        let _ = fs::set_permissions(&temp_download, fs::Permissions::from_mode(0o755));
+
+        // Atomically rename/replace running target
+        fs::rename(&temp_download, &target_path)
+            .map_err(|e| format!("Failed to replace binary: {}", e))?;
+
+        // Launch newly updated process in background and exit current
+        let _ = Command::new(&target_path).spawn();
+        std::process::exit(0);
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        // On Windows or other OS, open download URL directly
+        let _ = download_url;
+        Err("In-place self replacement is handled for Linux AppImage".to_string())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let engine = match AudioEngine::new() {
@@ -267,6 +317,7 @@ pub fn run() {
             set_metro_bpm,
             set_metro_volume,
             set_metro_cue_only,
+            apply_in_place_update,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
