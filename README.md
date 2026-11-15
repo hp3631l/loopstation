@@ -1,42 +1,56 @@
-# Beatbox Loopstation
+# RC-Beatbox Loopstation
 
-A real-time, hardware-style audio loopstation designed for live beatboxing, built with Rust and Tauri.
+A native, ultra-low-latency 4-channel audio loopstation built for live beatboxers. Inspired by hardware loopstations (Boss RC-505 Mk2) with physical tactile silicone pads, master loop synchronization, and seamless overdubbing.
 
-## Features
-- **4 Dedicated Loop Tracks** with sample-accurate loop boundary alignment.
-- **Master Loop Synchronization**: The first recorded track automatically defines the loop length and tempo cycle. Subsequent tracks automatically quantize and sync to the master cycle.
-- **Click-Free Seam Micro-Crossfading**: Eliminates audio pops and discontinuities at loop endpoints.
-- **Non-Destructive Overdubbing**: Layer multiple vocal lines onto any track with full 1-step undo.
-- **Tactile Performance Interface**:
-  - Rotating visual loop dials.
-  - Multi-color LED states (Empty, Record, Play, Overdub, Queued, Muted).
-  - Dynamic audio peak meters.
-  - Live headphone monitoring toggle with volume slider and mic input gain control.
-- **Keyboard Shortcuts for Live Beatboxing**:
-  - `[1]`, `[2]`, `[3]`, `[4]`: Select Active Track
-  - `[SPACE]`: Trigger Record / Play / Overdub on active track
-  - `[M]`: Mute / Unmute active track
-  - `[S]`: Solo active track
-  - `[U]`: Undo last overdub on active track
-  - `[C]`: Clear active track (`Shift + C`: Clear all tracks)
-  - `[ESC]`: Master Stop / Resume all playback
+---
 
-## Running the App on Linux
-Run directly from terminal:
+## ⚡ Download & Run (Plug & Play)
+
+Pre-built binaries are available on the [Releases Page](https://github.com/hp3631l/loopstation/releases/latest).
+
+### Linux (AppImage)
+1. Download **`loopstation-x86_64.AppImage`**.
+2. Make it executable and run:
+   ```bash
+   chmod +x loopstation-x86_64.AppImage
+   ./loopstation-x86_64.AppImage
+   ```
+
+### Windows (Standalone Zip)
+1. Download **`loopstation-windows.zip`**.
+2. Extract the zip and double-click **`tauri-app.exe`** (or run the installer).
+3. Plug in your mic and headphones—the app automatically detects your audio hardware via WASAPI.
+
+---
+
+## 🎹 Live Performance Shortcuts
+
+Designed for hands-on live beatboxing without touching the mouse:
+
+| Key | Action | Description |
+| :--- | :--- | :--- |
+| **`[1]` - `[4]`** | Select Track | Focus channel strip 1, 2, 3, or 4 |
+| **`[SPACE]`** | Punch In / Out | Record ➔ Play ➔ Overdub on active track |
+| **`[M]`** | Mute | Toggle mute on active track |
+| **`[S]`** | Solo | Solo active track (mutes other channels) |
+| **`[U]`** | Undo | Undo last overdub layer |
+| **`[C]`** | Clear Track | Erase loop on active track |
+| **`[Shift + C]`**| Clear All | Instant wipe of all 4 channels |
+| **`[ESC]`** | Master Stop | Stop or resume all playback simultaneously |
+
+---
+
+## 🛠️ Build From Source
+
+### Prerequisites
+- [Node.js](https://nodejs.org) (v18+)
+- [Rust](https://rustup.rs) (1.75+)
+
+### Clone & Build
 ```bash
-/home/hariprakash/Projects/loopstation/src-tauri/target/debug/tauri-app
-```
-Or run the portable AppImage:
-```bash
-/home/hariprakash/Projects/loopstation/src-tauri/target/debug/bundle/appimage/Beatbox\ Loopstation_0.1.0_amd64.AppImage
-```
-
-## Running / Building on Windows
-1. Clone or copy this repository to your Windows machine.
-2. Ensure [Node.js](https://nodejs.org) and [Rust](https://rustup.rs) are installed.
-3. In PowerShell or Command Prompt, run:
-```powershell
+git clone https://github.com/hp3631l/loopstation.git
+cd loopstation
 npm install
 npm run tauri build
 ```
-This produces a standalone Windows `.exe` and `.msi` installer in `src-tauri/target/release/bundle/msi/`.
+Binaries will be placed in `src-tauri/target/release/bundle/`.
