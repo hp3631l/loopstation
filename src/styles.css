@@ -1,30 +1,20 @@
 :root {
-  --chassis-bg: #0f1012;
-  --chassis-panel: #16171a;
-  --chassis-subpanel: #1c1d22;
-  --chassis-bay: #0b0c0e;
-  --chassis-border: #282a30;
-  --chassis-border-hi: #383b44;
-  --chassis-border-subtle: #202227;
+  --bg-app: #0e0f12;
+  --bg-panel: #16171c;
+  --bg-subpanel: #1c1e24;
+  --bg-recessed: #0a0b0d;
+  --border-subtle: #242630;
+  --border-focus: #3b82f6;
 
   --color-rec: #ef4444;
-  --color-rec-dark: #7f1d1d;
   --color-play: #22c55e;
-  --color-play-dark: #14532d;
   --color-dub: #f97316;
-  --color-dub-dark: #7c2d12;
-  --color-queued: #eab308;
-  --color-selected: #38bdf8;
+  --color-amber: #f59e0b;
+  --color-cyan: #38bdf8;
 
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-dim: #4b5563;
-
-  --screen-amber: #f59e0b;
-  --screen-green: #22c55e;
-  --screen-cyan: #38bdf8;
-  --focus-ring: #38bdf8;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --text-dim: #6b7280;
 
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color-scheme: dark;
@@ -48,13 +38,13 @@ button, input, select {
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus-ring);
+  outline: 2px solid var(--border-focus);
   outline-offset: 2px;
 }
 
 body {
-  background: var(--chassis-bg);
-  color: var(--text-primary);
+  background: var(--bg-app);
+  color: var(--text-main);
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -68,10 +58,9 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 10px;
-  gap: 8px;
-  background: var(--chassis-bg);
-  border: 1px solid var(--chassis-border-subtle);
+  padding: 12px;
+  gap: 10px;
+  background: var(--bg-app);
 }
 
 /* ==========================================================================
@@ -81,47 +70,50 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--chassis-panel);
-  border: 1px solid var(--chassis-border);
-  border-radius: 4px;
-  padding: 8px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 16px;
+  gap: 16px;
 }
 
 .brand-panel {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 170px;
 }
 
 .power-led {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #1f2937;
   border: 1px solid #111827;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .power-led.online {
-  background: var(--screen-green);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  background: var(--color-play);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
 }
 
 .brand-text {
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .brand-name {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: 2px;
-  color: var(--text-primary);
+  color: #ffffff;
   text-transform: uppercase;
 }
 
 .brand-sub {
-  font-size: 0.55rem;
+  font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 1.5px;
   color: var(--text-muted);
@@ -131,15 +123,17 @@ body {
 .console-center {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
 }
 
 /* Master OLED Screen */
 .lcd-screen {
-  background: var(--chassis-bay);
-  border: 1px solid var(--chassis-border);
-  border-radius: 3px;
-  padding: 5px 12px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 6px 14px;
   min-width: 140px;
 }
 
@@ -147,7 +141,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #1f2127;
+  border-bottom: 1px solid #1a1b22;
   padding-bottom: 2px;
 }
 
@@ -155,89 +149,159 @@ body {
   font-size: 0.52rem;
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: var(--text-muted);
+  color: var(--text-dim);
   text-transform: uppercase;
 }
 
 .lcd-indicator {
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: var(--screen-amber);
+  color: var(--color-amber);
 }
 
 .lcd-time {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 1px;
-  margin-top: 1px;
+  margin-top: 2px;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* Mic Channel Pod & Phones Pod & Metronome Pod */
+/* Console Pods */
 .mic-channel-pod, .monitor-pod, .metro-pod {
   display: flex;
   flex-direction: column;
-  background: var(--chassis-subpanel);
-  border: 1px solid var(--chassis-border);
-  border-radius: 3px;
-  padding: 5px 8px;
+  background: var(--bg-subpanel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 6px 10px;
   gap: 4px;
 }
 
-/* Metronome Module Styling */
-.metro-controls-row {
+.pod-tag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.pod-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hardware-toggle {
+  background: #252833;
+  border: 1px solid #363b4b;
+  color: var(--text-muted);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.hardware-toggle.active {
+  background: #0369a1;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.meter-and-knob {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* LED Ladder Meter */
+.led-ladder {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-recessed);
+  padding: 3px 5px;
+  border: 1px solid #1a1b22;
+  border-radius: 2px;
+}
+
+.ladder-dot {
+  width: 5px;
+  height: 11px;
+  background: #1c1e26;
+  border-radius: 1px;
+  transition: background-color 0.04s ease;
+}
+
+.dot-green.on { background: var(--color-play); }
+.dot-yellow.on { background: var(--color-amber); }
+.dot-red.on { background: var(--color-rec); }
+
+.knob-control {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
+.control-readout {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 30px;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Metronome Module */
+.metro-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .metro-beat-indicators {
   display: flex;
   gap: 2px;
-  background: var(--chassis-bay);
-  padding: 2px 4px;
-  border: 1px solid #1a1c22;
+  background: var(--bg-recessed);
+  padding: 3px 5px;
+  border: 1px solid #1a1b22;
   border-radius: 2px;
 }
 
 .beat-led {
   width: 6px;
-  height: 10px;
-  background: #1f2229;
+  height: 11px;
+  background: #1c1e26;
   border-radius: 1px;
   transition: background-color 0.04s ease;
 }
 
-.beat-led.on {
-  background: var(--screen-amber);
-  box-shadow: 0 0 6px var(--screen-amber);
-}
-
-.beat-led.accent.on {
-  background: var(--color-rec);
-  box-shadow: 0 0 6px var(--color-rec);
-}
+.beat-led.on { background: var(--color-amber); }
+.beat-led.accent.on { background: var(--color-rec); }
 
 .bpm-stepper {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .bpm-btn {
-  background: #252830;
-  border: 1px solid #363a45;
-  color: #e5e7eb;
+  background: #252833;
+  border: 1px solid #363b4b;
+  color: var(--text-main);
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: 0.7rem;
-  width: 18px;
-  height: 18px;
+  font-size: 0.75rem;
+  width: 19px;
+  height: 19px;
   border-radius: 2px;
   display: flex;
   align-items: center;
@@ -245,47 +309,33 @@ body {
   cursor: pointer;
 }
 
-.bpm-btn:hover {
-  background: #323642;
-  color: #ffffff;
-}
-
-.bpm-btn:active {
-  background: #191b20;
-}
+.bpm-btn:hover { background: #323746; }
+.bpm-btn:active { background: #16181f; }
 
 .bpm-readout {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #ffffff;
-  min-width: 28px;
+  min-width: 30px;
   text-align: center;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
 .tap-tempo-btn {
-  background: #252830;
-  border: 1px solid #363a45;
-  color: #9ca3af;
-  font-size: 0.52rem;
+  background: #252833;
+  border: 1px solid #363b4b;
+  color: var(--text-muted);
+  font-size: 0.55rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 2px;
   cursor: pointer;
 }
 
-.tap-tempo-btn:hover {
-  background: #323642;
-  color: #ffffff;
-}
-
-.tap-tempo-btn:active {
-  background: #f59e0b;
-  color: #000000;
-}
+.tap-tempo-btn:hover { background: #323746; color: #fff; }
+.tap-tempo-btn:active { background: var(--color-amber); color: #000; }
 
 .metro-sub-row {
   display: flex;
@@ -295,9 +345,9 @@ body {
 
 .metro-sub-row input[type="range"],
 .knob-control input[type="range"] {
-  width: 52px;
+  width: 56px;
   height: 4px;
-  background: #111215;
+  background: var(--bg-recessed);
   border-radius: 2px;
   outline: none;
   accent-color: #9ca3af;
@@ -305,157 +355,68 @@ body {
 }
 
 .cue-toggle-btn {
-  background: #1b1c22;
-  border: 1px solid #2d303a;
-  color: #6b7280;
-  font-size: 0.5rem;
+  background: #1e2028;
+  border: 1px solid #2d303c;
+  color: var(--text-dim);
+  font-size: 0.52rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 1px 4px;
+  padding: 2px 5px;
   border-radius: 2px;
   cursor: pointer;
 }
 
 .cue-toggle-btn.active {
-  background: #2b1d0c;
+  background: #3b280c;
   border-color: #d97706;
   color: #fbbf24;
-}
-
-.pod-tag {
-  font-size: 0.52rem;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.pod-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
-}
-
-.hardware-toggle {
-  background: #23262f;
-  border: 1px solid #323643;
-  color: #9ca3af;
-  font-size: 0.52rem;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
-.hardware-toggle.active {
-  background: #0c4a6e;
-  border-color: #0284c7;
-  color: #e0f2fe;
-}
-
-.meter-and-knob {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* LED Ladder Meter (Square LEDs) */
-.led-ladder {
-  display: flex;
-  gap: 2px;
-  background: var(--chassis-bay);
-  padding: 2px 4px;
-  border: 1px solid #1a1c22;
-  border-radius: 2px;
-}
-
-.ladder-dot {
-  width: 5px;
-  height: 10px;
-  background: #1b1e25;
-  border-radius: 1px;
-  transition: background-color 0.04s ease;
-}
-
-.dot-green.on {
-  background: var(--screen-green);
-  box-shadow: 0 0 4px var(--screen-green);
-}
-
-.dot-yellow.on {
-  background: var(--screen-amber);
-  box-shadow: 0 0 4px var(--screen-amber);
-}
-
-.dot-red.on {
-  background: var(--color-rec);
-  box-shadow: 0 0 5px var(--color-rec);
-}
-
-.knob-control {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.control-readout {
-  font-size: 0.65rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 600;
-  color: var(--text-secondary);
-  min-width: 28px;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
 }
 
 /* Hardware Routing Inset */
 .routing-inset {
   display: flex;
   flex-direction: column;
-  background: var(--chassis-subpanel);
-  border: 1px solid var(--chassis-border);
-  border-radius: 3px;
-  padding: 3px 6px;
-  gap: 2px;
+  background: var(--bg-subpanel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 5px 8px;
+  gap: 3px;
 }
 
 .routing-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .route-label {
   font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  color: var(--text-muted);
-  width: 22px;
+  color: var(--text-dim);
+  width: 24px;
 }
 
 .hw-select {
-  background: var(--chassis-bay);
-  border: 1px solid var(--chassis-border);
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
   border-radius: 2px;
-  color: var(--text-primary);
-  font-size: 0.55rem;
+  color: var(--text-main);
+  font-size: 0.58rem;
   font-weight: 500;
   padding: 2px 4px;
-  width: 125px;
+  width: 130px;
   outline: none;
   cursor: pointer;
 }
 
 .hw-select:focus-visible {
-  border-color: var(--focus-ring);
+  border-color: var(--border-focus);
 }
 
 /* Master Hardware Punch Pads */
 .master-action-pads {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .master-punch-pad {
@@ -463,84 +424,78 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 14px;
-  min-width: 84px;
+  padding: 8px 14px;
+  min-width: 86px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 4px;
   outline: none;
   transition: transform 0.05s ease, filter 0.08s ease;
 }
 
-.master-punch-pad:hover {
-  filter: brightness(1.15);
-}
-
-.master-punch-pad:active {
-  transform: translateY(1px);
-}
+.master-punch-pad:hover { filter: brightness(1.15); }
+.master-punch-pad:active { transform: translateY(1px); }
 
 .stop-all-pad {
-  background: var(--color-rec-dark);
+  background: #7f1d1d;
   border: 1px solid #b91c1c;
   color: #ffffff;
 }
 
 .stop-all-pad.paused {
-  background: var(--color-play-dark);
-  border: 1px solid #15803d;
+  background: #14532d;
+  border: 1px solid #16a34a;
   color: #ffffff;
 }
 
 .clear-all-pad {
-  background: #24262e;
-  border: 1px solid #3b3f4c;
-  color: #d1d5db;
+  background: #242630;
+  border: 1px solid #363b4b;
+  color: #e5e7eb;
 }
 
 .pad-symbol {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .pad-label {
-  font-size: 0.58rem;
+  font-size: 0.6rem;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 
 .pad-key {
   font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* ==========================================================================
-   4 CHANNEL STRIPS DECK (PRO AUDIO STUDIO DAW STYLE)
+   4 CHANNEL STRIPS DECK
    ========================================================================== */
 .channels-deck {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   min-height: 0;
 }
 
 .channel-strip {
-  background: var(--chassis-panel);
-  border: 1px solid var(--chassis-border);
-  border-radius: 4px;
-  padding: 8px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   position: relative;
   transition: border-color 0.15s ease;
 }
 
-/* Channel Strip Selection Highlight */
 .channel-strip.selected {
-  border-color: #e5e7eb;
-  background: #1a1b1f;
+  border-color: #94a3b8;
+  background: #181920;
 }
 
 /* Channel Header */
@@ -548,78 +503,76 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--chassis-border);
-  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 6px;
 }
 
 .channel-id-row {
   display: flex;
   align-items: baseline;
-  gap: 5px;
+  gap: 6px;
 }
 
 .channel-num {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   color: #ffffff;
 }
 
 .channel-key-hint {
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 .master-led {
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 700;
   letter-spacing: 1px;
-  color: var(--screen-amber);
-  background: #2b1d0c;
+  color: var(--color-amber);
+  background: #3b280c;
   border: 1px solid #d97706;
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 2px;
   display: none;
 }
 
-/* Channel Mode Toggle Row */
+/* Mode Toggle Row */
 .channel-mode-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  background: var(--chassis-bay);
-  border: 1px solid var(--chassis-border);
-  border-radius: 3px;
-  padding: 3px 6px;
+  gap: 6px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 4px 8px;
 }
 
 .mode-badge-label {
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 700;
-  color: var(--text-muted);
-  letter-spacing: 1px;
+  color: var(--text-dim);
+  letter-spacing: 1.2px;
 }
 
 .channel-mode-btn {
   background: #20222a;
   border: 1px solid #333644;
-  color: #9ca3af;
-  font-size: 0.55rem;
+  color: var(--text-muted);
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.8px;
-  padding: 2px 6px;
+  padding: 2px 7px;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
   outline: none;
 }
 
-.channel-mode-btn:hover {
-  filter: brightness(1.2);
-}
+.channel-mode-btn:hover { filter: brightness(1.15); }
 
 .channel-mode-btn.mode-play {
   background: #0f291e;
@@ -628,38 +581,38 @@ body {
 }
 
 .channel-mode-btn.mode-mpc {
-  background: #2b1d0c;
+  background: #3b280c;
   border-color: #d97706;
   color: #fbbf24;
 }
 
 /* ==========================================================================
-   BOSS RC-505 CIRCULAR SILICONE PERFORMANCE PAD & RADIAL LOOP RING
+   BOSS RC-505 CIRCULAR PERFORMANCE PAD & RADIAL LOOP RING
    ========================================================================== */
 .pad-assembly {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   cursor: pointer;
-  background: var(--chassis-bay);
-  border: 1px solid var(--chassis-border);
-  border-radius: 4px;
-  padding: 8px 4px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 4px;
   touch-action: manipulation;
   transition: border-color 0.15s ease;
 }
 
 .pad-assembly:focus-visible {
-  outline: 2px solid var(--focus-ring);
+  outline: 2px solid var(--border-focus);
   outline-offset: -2px;
 }
 
 .pad-circular-housing {
   position: relative;
-  width: 124px;
-  height: 124px;
+  width: 128px;
+  height: 128px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -677,13 +630,13 @@ body {
 
 .ring-track {
   fill: none;
-  stroke: #18191f;
+  stroke: #181a20;
   stroke-width: 6;
 }
 
 .ring-progress {
   fill: none;
-  stroke: var(--screen-green);
+  stroke: var(--color-play);
   stroke-width: 6;
   stroke-linecap: round;
   stroke-dasharray: 364.4;
@@ -693,85 +646,79 @@ body {
 
 /* Authentic Boss RC-505 Circular Silicone Tactile Button */
 .circular-silicone-pad {
-  width: 96px;
-  height: 96px;
+  width: 98px;
+  height: 98px;
   border-radius: 50% !important;
-  background: #1c1e24;
-  border: 2px solid #2e313c;
+  background: #1c1d23;
+  border: 2px solid #2d303a;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.08), 0 3px 6px rgba(0, 0, 0, 0.6);
+  gap: 2px;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.06), 0 4px 8px rgba(0, 0, 0, 0.6);
   transition: transform 0.05s ease, filter 0.08s ease;
   user-select: none;
 }
 
-.pad-assembly:hover .circular-silicone-pad {
-  filter: brightness(1.15);
-}
-
-.pad-assembly:active .circular-silicone-pad {
-  transform: scale(0.95);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9);
-}
+.pad-assembly:hover .circular-silicone-pad { filter: brightness(1.15); }
+.pad-assembly:active .circular-silicone-pad { transform: scale(0.95); }
 
 .pad-track-badge {
   font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--text-dim);
   letter-spacing: 0.5px;
 }
 
 .pad-state-text {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 800;
   letter-spacing: 1.5px;
-  color: #6b7280;
+  color: var(--text-dim);
   text-transform: uppercase;
 }
 
 .pad-action-sub {
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 700;
   letter-spacing: 0.8px;
-  color: #4b5563;
+  color: var(--text-dim);
   text-transform: uppercase;
 }
 
 .pad-time-text {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* Circular Silicone Illuminated LED States */
+/* Pad States */
 .state-empty .circular-silicone-pad {
-  background: #1a1c22;
-  border-color: #272a33;
+  background: #1b1c22;
+  border-color: #272932;
 }
 
 .state-recording .circular-silicone-pad {
   background: var(--color-rec);
   border-color: #fca5a5;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 16px rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
 .state-recording .ring-progress { stroke: var(--color-rec); }
-.state-recording .pad-track-badge { color: #fecdd3; }
+.state-recording .pad-track-badge { color: #fee2e2; }
 .state-recording .pad-state-text { color: #ffffff; }
 .state-recording .pad-action-sub { color: #fee2e2; }
 
 .state-playing .circular-silicone-pad {
   background: var(--color-play);
   border-color: #86efac;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 16px rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
-.state-playing .ring-progress { stroke: var(--screen-green); }
+.state-playing .ring-progress { stroke: var(--color-play); }
 .state-playing .pad-track-badge { color: #dcfce7; }
 .state-playing .pad-state-text { color: #ffffff; }
 .state-playing .pad-action-sub { color: #dcfce7; }
@@ -779,27 +726,26 @@ body {
 .state-overdubbing .circular-silicone-pad {
   background: var(--color-dub);
   border-color: #fdba74;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 16px rgba(249, 115, 22, 0.6);
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
 .state-overdubbing .ring-progress { stroke: var(--color-dub); }
 .state-overdubbing .pad-state-text { color: #ffffff; }
 .state-overdubbing .pad-action-sub { color: #ffedd5; }
 
 .state-queued .circular-silicone-pad {
-  background: var(--color-queued);
+  background: var(--color-amber);
   border-color: #fde047;
-  box-shadow: 0 0 12px rgba(234, 179, 8, 0.5);
 }
 .state-queued .pad-state-text { color: #ffffff; }
 
 .state-muted .circular-silicone-pad {
   background: #1c1d22;
   border-color: #2e303a;
-  opacity: 0.6;
+  opacity: 0.65;
 }
 
 /* ==========================================================================
-   TACTILE MICRO-PADS STRIP (MUTE, SOLO, UNDO, CLEAR)
+   FUNCTION BUTTONS (MUTE, SOLO, UNDO, CLEAR)
    ========================================================================== */
 .channel-function-row {
   display: grid;
@@ -810,40 +756,34 @@ body {
 .func-pad {
   background: #20222a;
   border: 1px solid #2f323e;
-  color: #9ca3af;
-  font-size: 0.55rem;
+  color: var(--text-muted);
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  padding: 5px 0;
-  border-radius: 2px;
+  padding: 6px 0;
+  border-radius: 3px;
   cursor: pointer;
   outline: none;
   transition: transform 0.05s ease, background-color 0.1s ease;
 }
 
-.func-pad:hover {
-  background: #2b2e3a;
-  color: #ffffff;
-}
-
-.func-pad:active {
-  transform: translateY(1px);
-}
+.func-pad:hover { background: #2c303c; color: #ffffff; }
+.func-pad:active { transform: translateY(1px); }
 
 .func-pad.active-mute {
-  background: var(--color-rec-dark);
+  background: #991b1b;
   border-color: #ef4444;
   color: #ffffff;
 }
 
 .func-pad.active-solo {
-  background: #78350f;
+  background: #92400e;
   border-color: #f59e0b;
   color: #ffffff;
 }
 
 .func-pad.active-undo {
-  background: #0369a1;
+  background: #075985;
   border-color: #38bdf8;
   color: #ffffff;
 }
@@ -860,11 +800,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  background: var(--chassis-bay);
-  border: 1px solid var(--chassis-border);
-  border-radius: 3px;
-  padding: 8px 8px;
+  gap: 12px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 10px 10px;
   margin-top: auto;
 }
 
@@ -872,11 +812,11 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 120px;
-  font-size: 0.5rem;
+  height: 124px;
+  font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-dim);
   text-align: right;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
@@ -884,8 +824,8 @@ body {
 
 .vertical-fader-assembly {
   position: relative;
-  width: 36px;
-  height: 120px;
+  width: 38px;
+  height: 124px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -900,13 +840,12 @@ body {
   border-radius: 2px;
 }
 
-/* Custom styled vertical hardware fader slider */
 .pro-vertical-fader {
   -webkit-appearance: slider-vertical;
   appearance: slider-vertical;
   writing-mode: vertical-lr;
   direction: rtl;
-  width: 36px;
+  width: 38px;
   height: 100%;
   background: transparent;
   cursor: pointer;
@@ -939,10 +878,10 @@ body {
   display: flex;
   flex-direction: column-reverse;
   gap: 2px;
-  height: 120px;
-  background: #000000;
-  padding: 2px 3px;
-  border: 1px solid #1c1d23;
+  height: 124px;
+  background: #040507;
+  padding: 2px 4px;
+  border: 1px solid #1a1b22;
   border-radius: 2px;
 }
 
@@ -953,20 +892,9 @@ body {
   border-radius: 1px;
 }
 
-.seg-green.lit {
-  background: var(--screen-green);
-  box-shadow: 0 0 3px var(--screen-green);
-}
-
-.seg-yellow.lit {
-  background: var(--screen-amber);
-  box-shadow: 0 0 3px var(--screen-amber);
-}
-
-.seg-red.lit {
-  background: var(--color-rec);
-  box-shadow: 0 0 4px var(--color-rec);
-}
+.seg-green.lit { background: var(--color-play); }
+.seg-yellow.lit { background: var(--color-amber); }
+.seg-red.lit { background: var(--color-rec); }
 
 .fader-footer {
   display: flex;
@@ -977,11 +905,11 @@ body {
   font-size: 0.65rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 600;
-  color: var(--text-primary);
-  background: var(--chassis-bay);
-  border: 1px solid var(--chassis-border);
-  border-radius: 2px;
-  padding: 1px 6px;
+  color: var(--text-main);
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  padding: 2px 7px;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -993,23 +921,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--chassis-panel);
-  border: 1px solid var(--chassis-border);
-  border-radius: 3px;
-  padding: 5px 12px;
-  font-size: 0.62rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 0.65rem;
   color: var(--text-muted);
 }
 
 .footer-shortcuts {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .key-shortcut {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .key-cap {
@@ -1026,53 +954,48 @@ body {
 .footer-spec {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
-  color: var(--text-muted);
+  font-size: 0.62rem;
+  color: var(--text-dim);
   font-weight: 600;
 }
 
 #latency-display {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
-.spec-divider {
-  color: #374151;
-}
+.spec-divider { color: #374151; }
 
 .update-section {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .version-tag {
-  color: var(--text-muted);
+  color: var(--text-dim);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 600;
 }
 
 .update-btn {
   background: #202229;
   border: 1px solid #323540;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
+  font-size: 0.58rem;
   font-weight: 600;
-  padding: 1px 5px;
+  padding: 2px 6px;
   cursor: pointer;
   border-radius: 2px;
   transition: background-color 0.1s ease, color 0.1s ease;
 }
 
-.update-btn:hover {
-  background: #2c303a;
-  color: #ffffff;
-}
+.update-btn:hover { background: #2c303a; color: #ffffff; }
 
 .update-btn.available {
   background: #3b280c;
