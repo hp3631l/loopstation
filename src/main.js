@@ -17,6 +17,7 @@ const CIRCUMFERENCE = 2 * Math.PI * 70; // radius = 70
 let activeTrackIdx = 0;
 let monitorActive = true;
 let isMasterPlaying = true;
+let lastTelemetryTracks = [];
 
 // DOM Master Elements
 const tracksContainer = document.getElementById("tracks-container");
@@ -202,22 +203,19 @@ function buildTrackCards() {
       }
     });
 
-    // Giant Pad Trigger
+    // Giant Pad Trigger (Mouse & Touch)
     const triggerBtn = strip.querySelector(`#trigger-btn-${i}`);
-    triggerBtn.addEventListener("mousedown", () => {
+    triggerBtn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
       selectTrack(i);
+      const trackSnap = lastTelemetryTracks[i];
+      const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord";
       const mode = trackModes[i] || "Play";
-      if (mode === "TotalMpc" || mode === "PartialMpc") {
+
+      if (isRecorded && (mode === "TotalMpc" || mode === "PartialMpc")) {
         retriggerTrack(i);
       } else {
         triggerTrack(i);
-      }
-    });
-
-    triggerBtn.addEventListener("mouseup", () => {
-      const mode = trackModes[i] || "Play";
-      if (mode === "PartialMpc") {
-        setTrackPaused(i, true);
       }
     });
 
@@ -547,10 +545,12 @@ window.addEventListener("keydown", (e) => {
     cycleTrackMode(activeTrackIdx);
   } else if (key === " ") {
     e.preventDefault();
+    if (e.repeat) return; // Prevent OS key-repeat stutter while held
+    const trackSnap = lastTelemetryTracks[activeTrackIdx];
+    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord";
     const mode = trackModes[activeTrackIdx] || "Play";
-    if (mode === "TotalMpc") {
-      retriggerTrack(activeTrackIdx);
-    } else if (mode === "PartialMpc") {
+
+    if (isRecorded && (mode === "TotalMpc" || mode === "PartialMpc")) {
       retriggerTrack(activeTrackIdx);
     } else {
       triggerTrack(activeTrackIdx);
@@ -620,9 +620,24 @@ window.addEventListener("keyup", (e) => {
     }
   } else if (key === " ") {
     // If active track is in PartialMpc (Gate) mode, stop playback on key release
+    const trackSnap = lastTelemetryTracks[activeTrackIdx];
+    const isRecorded = trackSnap && trackSnap.length_seconds > 0 && trackSnap.state !== "Empty" && trackSnap.state !== "QueuedRecord";
     const mode = trackModes[activeTrackIdx] || "Play";
-    if (mode === "PartialMpc") {
+    if (isRecorded && mode === "PartialMpc") {
       setTrackPaused(activeTrackIdx, true);
+    }
+  }
+});
+
+// Global window pointerup: ensures Partial MPC reliably stops if user drags cursor outside pad
+window.addEventListener("pointerup", () => {
+  for (let i = 0; i < 4; i++) {
+    const mode = trackModes[i] || "Play";
+    if (mode === "PartialMpc") {
+      const trackSnap = lastTelemetryTracks[i];
+      if (trackSnap && trackSnap.length_seconds > 0) {
+        setTrackPaused(i, true);
+      }
     }
   }
 });
@@ -645,6 +660,7 @@ function renderState(snap) {
 
   activeTrackIdx = snap.active_track_idx;
   isMasterPlaying = snap.is_master_playing;
+  lastTelemetryTracks = snap.tracks || [];
 
   // Master Stop / Play button state
   if (isMasterPlaying) {
@@ -802,7 +818,7 @@ function renderState(snap) {
 }
 
 // In-Place Update Checker & Self-Updater
-const CURRENT_VERSION = "v0.1.2";
+const CURRENT_VERSION = "v0.1.3";
 const GITHUB_REPO = "hp3631l/loopstation";
 const checkUpdateBtn = document.getElementById("check-update-btn");
 const versionTag = document.getElementById("current-version-tag");

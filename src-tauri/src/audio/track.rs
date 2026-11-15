@@ -151,8 +151,8 @@ impl LoopTrack {
         self.playhead += 1;
         let wrapped = if self.playhead >= self.length_frames {
             self.playhead = 0;
-            if self.mode == PlaybackMode::TotalMpc {
-                // In Total MPC (One-Shot), play once to the end and stop!
+            if self.mode == PlaybackMode::TotalMpc || self.mode == PlaybackMode::PartialMpc {
+                // In Total MPC and Partial MPC, play once to the end and stop!
                 self.is_paused = true;
             }
             true
