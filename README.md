@@ -1,16 +1,16 @@
 # RC-Beatbox Loopstation
 
-A native, ultra-low-latency 4-channel audio loopstation built for live beatboxers. Inspired by hardware loopstations (Boss RC-505 Mk2) with physical tactile silicone pads, master loop synchronization, and seamless overdubbing.
+A native, ultra-low-latency 4-channel audio loopstation built for live beatboxers. Inspired by hardware loopstations (Boss RC-505 Mk2) with tactile silicone pads, master loop synchronization, and seamless overdubbing.
 
 ---
 
 ## ⚡ Download & Run (Plug & Play)
 
-Pre-built binaries are available on the [Releases Page](https://github.com/hp3631l/loopstation/releases/latest).
+Download pre-built binaries from the [Releases Page](https://github.com/hp3631l/loopstation/releases/latest).
 
 ### Linux (AppImage)
 1. Download **`loopstation-x86_64.AppImage`**.
-2. Make it executable and run:
+2. Run:
    ```bash
    chmod +x loopstation-x86_64.AppImage
    ./loopstation-x86_64.AppImage
@@ -19,7 +19,7 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hp363
 ### Windows (Standalone Zip)
 1. Download **`loopstation-windows.zip`**.
 2. Extract the zip and double-click **`loopstation.exe`**.
-3. Plug in your mic and headphones—the app automatically detects your audio hardware via WASAPI.
+3. Plug in your mic and headphones—the app automatically detects your audio hardware.
 
 ---
 
@@ -43,14 +43,14 @@ Designed for hands-on live beatboxing without touching the mouse:
 ## 🛠️ Build From Source
 
 ### Prerequisites
-- [Node.js](https://nodejs.org) (v18+)
-- [Rust](https://rustup.rs) (1.75+)
+- Node.js (v18+)
+- Rust (1.75+)
 
-### Clone & Build
+### Commands
 ```bash
 git clone https://github.com/hp3631l/loopstation.git
 cd loopstation
 npm install
-npm run tauri build
+npm run build
 ```
 Binaries will be placed in `src-tauri/target/release/bundle/`.
