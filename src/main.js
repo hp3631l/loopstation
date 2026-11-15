@@ -112,7 +112,7 @@ function buildTrackCards() {
   tracksContainer.innerHTML = "";
   for (let i = 0; i < 4; i++) {
     const strip = document.createElement("div");
-    strip.className = `channel-strip ch-${i} state-empty ${i === 0 ? "selected" : ""}`;
+    strip.className = `channel-strip state-empty ${i === 0 ? "selected" : ""}`;
     strip.id = `track-card-${i}`;
 
     strip.innerHTML = `

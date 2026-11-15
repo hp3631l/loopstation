@@ -1,36 +1,32 @@
 :root {
-  --chassis-bg: #090b0e;
-  --chassis-titanium: #13161c;
-  --chassis-panel: #161922;
-  --chassis-subpanel: #11131a;
-  --chassis-border: #232836;
-  --chassis-border-hi: #3b4257;
-  --recessed-bay: #07080b;
-
-  --pad-empty-bg: #12141a;
-  --pad-empty-border: #262c3b;
-  --pad-empty-text: #64748b;
+  --chassis-bg: #0f1012;
+  --chassis-panel: #16171a;
+  --chassis-subpanel: #1c1d22;
+  --chassis-bay: #0b0c0e;
+  --chassis-border: #282a30;
+  --chassis-border-hi: #383b44;
+  --chassis-border-subtle: #202227;
 
   --color-rec: #ef4444;
-  --color-rec-pad: #991b1b;
-  --color-play: #10b981;
-  --color-play-pad: #065f46;
+  --color-rec-dark: #7f1d1d;
+  --color-play: #22c55e;
+  --color-play-dark: #14532d;
   --color-dub: #f97316;
-  --color-dub-pad: #9a3412;
-  --color-queued: #f59e0b;
-  --color-muted: #334155;
+  --color-dub-dark: #7c2d12;
+  --color-queued: #eab308;
+  --color-selected: #38bdf8;
 
-  --text-primary: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --text-hi: #ffffff;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-dim: #4b5563;
 
   --screen-amber: #f59e0b;
-  --screen-green: #10b981;
+  --screen-green: #22c55e;
   --screen-cyan: #38bdf8;
   --focus-ring: #38bdf8;
 
-  font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color-scheme: dark;
   user-select: none;
   -webkit-user-select: none;
@@ -66,7 +62,7 @@ body {
 }
 
 /* ==========================================================================
-   MAIN HARDWARE CHASSIS (BRUSHED TITANIUM STUDIO RACK)
+   MAIN HARDWARE CHASSIS
    ========================================================================== */
 .chassis {
   display: flex;
@@ -74,9 +70,8 @@ body {
   height: 100vh;
   padding: 10px;
   gap: 8px;
-  background: radial-gradient(circle at 50% -20%, #1c202a 0%, #0d0e12 60%, #07080a 100%);
-  border: 1px solid #232836;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--chassis-bg);
+  border: 1px solid var(--chassis-border-subtle);
 }
 
 /* ==========================================================================
@@ -86,33 +81,30 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(180deg, #181c26 0%, #101218 100%);
+  background: var(--chassis-panel);
   border: 1px solid var(--chassis-border);
-  border-top: 2px solid var(--chassis-border-hi);
-  border-radius: 6px;
-  padding: 8px 16px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 8px 14px;
 }
 
 .brand-panel {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .power-led {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #1e293b;
-  border: 1px solid #0f172a;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  background: #1f2937;
+  border: 1px solid #111827;
+  transition: background-color 0.15s ease;
 }
 
 .power-led.online {
   background: var(--screen-green);
-  box-shadow: 0 0 10px var(--screen-green), 0 0 20px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
 }
 
 .brand-text {
@@ -121,75 +113,67 @@ body {
 }
 
 .brand-name {
-  font-size: 1.25rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 3px;
-  color: #ffffff;
+  letter-spacing: 2px;
+  color: var(--text-primary);
   text-transform: uppercase;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .brand-sub {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--screen-cyan);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
 .console-center {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-/* Master Backlit OLED Glass Screen */
+/* Master OLED Screen */
 .lcd-screen {
-  background: radial-gradient(circle at 50% 0%, #061c2d 0%, #02070d 100%);
-  border: 1px solid #163650;
-  border-top: 1px solid #205078;
-  border-radius: 4px;
-  padding: 6px 14px;
-  min-width: 146px;
-  box-shadow: inset 0 0 14px rgba(6, 182, 212, 0.2), 0 2px 6px rgba(0, 0, 0, 0.8);
+  background: var(--chassis-bay);
+  border: 1px solid var(--chassis-border);
+  border-radius: 3px;
+  padding: 5px 12px;
+  min-width: 140px;
 }
 
 .lcd-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.15);
-  padding-bottom: 3px;
+  border-bottom: 1px solid #1f2127;
+  padding-bottom: 2px;
 }
 
 .lcd-title {
-  font-size: 0.55rem;
+  font-size: 0.52rem;
   font-weight: 700;
-  letter-spacing: 2px;
-  color: #7dd3fc;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
 .lcd-indicator {
-  font-size: 0.52rem;
+  font-size: 0.5rem;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: #fbbf24;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  padding: 1px 4px;
-  border-radius: 2px;
+  letter-spacing: 0.5px;
+  color: var(--screen-amber);
 }
 
 .lcd-time {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #38bdf8;
-  letter-spacing: 1.5px;
-  margin-top: 2px;
-  text-shadow: 0 0 10px rgba(56, 189, 248, 0.7), 0 0 22px rgba(56, 189, 248, 0.35);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+  margin-top: 1px;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -198,115 +182,109 @@ body {
 .mic-channel-pod, .monitor-pod, .metro-pod {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #13161f 0%, #0c0e14 100%);
-  border: 1px solid #232838;
-  border-radius: 4px;
-  padding: 6px 10px;
-  gap: 5px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 6px rgba(0, 0, 0, 0.6);
+  background: var(--chassis-subpanel);
+  border: 1px solid var(--chassis-border);
+  border-radius: 3px;
+  padding: 5px 8px;
+  gap: 4px;
 }
 
 /* Metronome Module Styling */
 .metro-controls-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .metro-beat-indicators {
   display: flex;
-  gap: 3px;
-  background: #080a0e;
-  padding: 3px 5px;
-  border: 1px solid #1a1e29;
-  border-radius: 3px;
+  gap: 2px;
+  background: var(--chassis-bay);
+  padding: 2px 4px;
+  border: 1px solid #1a1c22;
+  border-radius: 2px;
 }
 
 .beat-led {
-  width: 7px;
-  height: 12px;
-  background: #181d27;
+  width: 6px;
+  height: 10px;
+  background: #1f2229;
   border-radius: 1px;
-  transition: background-color 0.04s ease, box-shadow 0.04s ease;
+  transition: background-color 0.04s ease;
 }
 
 .beat-led.on {
   background: var(--screen-amber);
-  box-shadow: 0 0 8px var(--screen-amber), 0 0 14px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 6px var(--screen-amber);
 }
 
 .beat-led.accent.on {
   background: var(--color-rec);
-  box-shadow: 0 0 10px var(--color-rec), 0 0 18px rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 6px var(--color-rec);
 }
 
 .bpm-stepper {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .bpm-btn {
-  background: linear-gradient(180deg, #222734 0%, #161a23 100%);
-  border: 1px solid #333b4e;
-  color: #e2e8f0;
+  background: #252830;
+  border: 1px solid #363a45;
+  color: #e5e7eb;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  font-size: 0.75rem;
-  width: 20px;
-  height: 20px;
-  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.08s ease, transform 0.05s ease;
 }
 
 .bpm-btn:hover {
-  background: #2d3446;
-  border-color: #47536d;
+  background: #323642;
+  color: #ffffff;
 }
 
 .bpm-btn:active {
-  background: #11141b;
-  transform: translateY(1px);
+  background: #191b20;
 }
 
 .bpm-readout {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: #ffffff;
-  min-width: 32px;
+  min-width: 28px;
   text-align: center;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
 .tap-tempo-btn {
-  background: linear-gradient(180deg, #262c3c 0%, #191d27 100%);
-  border: 1px solid #373f55;
-  color: #cbd5e1;
-  font-size: 0.55rem;
-  font-weight: 800;
+  background: #252830;
+  border: 1px solid #363a45;
+  color: #9ca3af;
+  font-size: 0.52rem;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  padding: 3px 6px;
-  border-radius: 3px;
+  padding: 2px 5px;
+  border-radius: 2px;
   cursor: pointer;
-  transition: background 0.08s ease, transform 0.05s ease;
 }
 
 .tap-tempo-btn:hover {
-  background: #333a4c;
-  border-color: #4b5563;
-  color: #fff;
+  background: #323642;
+  color: #ffffff;
 }
 
 .tap-tempo-btn:active {
   background: #f59e0b;
   color: #000000;
-  box-shadow: 0 0 10px #f59e0b;
 }
 
 .metro-sub-row {
@@ -317,40 +295,38 @@ body {
 
 .metro-sub-row input[type="range"],
 .knob-control input[type="range"] {
-  width: 58px;
+  width: 52px;
   height: 4px;
-  background: #0f131a;
+  background: #111215;
   border-radius: 2px;
   outline: none;
-  accent-color: #38bdf8;
+  accent-color: #9ca3af;
   cursor: pointer;
 }
 
 .cue-toggle-btn {
-  background: #161922;
-  border: 1px solid #282e3d;
-  color: #94a3b8;
-  font-size: 0.52rem;
-  font-weight: 800;
+  background: #1b1c22;
+  border: 1px solid #2d303a;
+  color: #6b7280;
+  font-size: 0.5rem;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  padding: 2px 5px;
+  padding: 1px 4px;
   border-radius: 2px;
   cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease;
 }
 
 .cue-toggle-btn.active {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: #f59e0b;
+  background: #2b1d0c;
+  border-color: #d97706;
   color: #fbbf24;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
 }
 
 .pod-tag {
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #94a3b8;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
@@ -358,80 +334,78 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .hardware-toggle {
-  background: linear-gradient(180deg, #222634 0%, #151821 100%);
-  border: 1px solid #333b4e;
-  color: #94a3b8;
-  font-size: 0.55rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  padding: 2px 7px;
-  border-radius: 3px;
+  background: #23262f;
+  border: 1px solid #323643;
+  color: #9ca3af;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 2px 6px;
+  border-radius: 2px;
   cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
 }
 
 .hardware-toggle.active {
-  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
-  border-color: #38bdf8;
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+  background: #0c4a6e;
+  border-color: #0284c7;
+  color: #e0f2fe;
 }
 
 .meter-and-knob {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* LED Ladder Meter (Square LEDs) */
 .led-ladder {
   display: flex;
   gap: 2px;
-  background: #08090d;
-  padding: 3px 5px;
-  border: 1px solid #1a1e29;
-  border-radius: 3px;
+  background: var(--chassis-bay);
+  padding: 2px 4px;
+  border: 1px solid #1a1c22;
+  border-radius: 2px;
 }
 
 .ladder-dot {
-  width: 6px;
-  height: 12px;
-  background: #161a23;
+  width: 5px;
+  height: 10px;
+  background: #1b1e25;
   border-radius: 1px;
-  transition: background-color 0.04s ease, box-shadow 0.04s ease;
+  transition: background-color 0.04s ease;
 }
 
 .dot-green.on {
   background: var(--screen-green);
-  box-shadow: 0 0 6px var(--screen-green);
+  box-shadow: 0 0 4px var(--screen-green);
 }
 
 .dot-yellow.on {
   background: var(--screen-amber);
-  box-shadow: 0 0 6px var(--screen-amber);
+  box-shadow: 0 0 4px var(--screen-amber);
 }
 
 .dot-red.on {
   background: var(--color-rec);
-  box-shadow: 0 0 8px var(--color-rec);
+  box-shadow: 0 0 5px var(--color-rec);
 }
 
 .knob-control {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .control-readout {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: #cbd5e1;
-  min-width: 32px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 28px;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -440,51 +414,48 @@ body {
 .routing-inset {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #10131a 0%, #090b0f 100%);
-  border: 1px solid #232838;
-  border-radius: 4px;
-  padding: 4px 8px;
-  gap: 3px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+  background: var(--chassis-subpanel);
+  border: 1px solid var(--chassis-border);
+  border-radius: 3px;
+  padding: 3px 6px;
+  gap: 2px;
 }
 
 .routing-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .route-label {
-  font-size: 0.55rem;
+  font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  color: var(--screen-cyan);
-  width: 24px;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 22px;
 }
 
 .hw-select {
-  background: #0d1017;
-  border: 1px solid #282f42;
-  border-radius: 3px;
-  color: #e2e8f0;
-  font-size: 0.58rem;
-  font-weight: 600;
+  background: var(--chassis-bay);
+  border: 1px solid var(--chassis-border);
+  border-radius: 2px;
+  color: var(--text-primary);
+  font-size: 0.55rem;
+  font-weight: 500;
   padding: 2px 4px;
-  width: 130px;
+  width: 125px;
   outline: none;
   cursor: pointer;
-  transition: border-color 0.15s ease;
 }
 
 .hw-select:focus-visible {
-  border-color: #38bdf8;
-  outline: 2px solid #38bdf8;
+  border-color: var(--focus-ring);
 }
 
 /* Master Hardware Punch Pads */
 .master-action-pads {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .master-punch-pad {
@@ -492,13 +463,12 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
-  min-width: 92px;
+  padding: 6px 14px;
+  min-width: 84px;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 3px;
   outline: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: transform 0.06s ease, box-shadow 0.08s ease, filter 0.08s ease;
+  transition: transform 0.05s ease, filter 0.08s ease;
 }
 
 .master-punch-pad:hover {
@@ -506,124 +476,110 @@ body {
 }
 
 .master-punch-pad:active {
-  transform: translateY(2px) scale(0.98);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  transform: translateY(1px);
 }
 
 .stop-all-pad {
-  background: linear-gradient(180deg, #b91c1c 0%, #991b1b 50%, #450a0a 100%);
-  border: 1px solid #ef4444;
-  border-top: 2px solid #fca5a5;
+  background: var(--color-rec-dark);
+  border: 1px solid #b91c1c;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 0 14px rgba(239, 68, 68, 0.35);
 }
 
 .stop-all-pad.paused {
-  background: linear-gradient(180deg, #15803d 0%, #166534 50%, #052e16 100%);
-  border: 1px solid #22c55e;
-  border-top: 2px solid #86efac;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 0 14px rgba(34, 197, 94, 0.35);
+  background: var(--color-play-dark);
+  border: 1px solid #15803d;
+  color: #ffffff;
 }
 
 .clear-all-pad {
-  background: linear-gradient(180deg, #27272a 0%, #18181b 50%, #09090b 100%);
-  border: 1px solid #3f3f46;
-  border-top: 2px solid #71717a;
-  color: #e4e4e7;
+  background: #24262e;
+  border: 1px solid #3b3f4c;
+  color: #d1d5db;
 }
 
 .pad-symbol {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .pad-label {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .pad-key {
-  font-size: 0.55rem;
+  font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ==========================================================================
-   4 CHANNEL STRIPS DECK (HARDWARE INSTRUMENT STYLE)
+   4 CHANNEL STRIPS DECK (PRO AUDIO STUDIO DAW STYLE)
    ========================================================================== */
 .channels-deck {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
   flex: 1;
   min-height: 0;
 }
 
 .channel-strip {
-  background: linear-gradient(180deg, #151822 0%, #0d0f15 100%);
+  background: var(--chassis-panel);
   border: 1px solid var(--chassis-border);
-  border-top: 2px solid #333a4c;
-  border-radius: 6px;
-  padding: 10px 10px;
+  border-radius: 4px;
+  padding: 8px 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   position: relative;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 /* Channel Strip Selection Highlight */
 .channel-strip.selected {
-  border-color: #38bdf8;
-  border-top-color: #7dd3fc;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-color: #e5e7eb;
+  background: #1a1b1f;
 }
-
-/* Channel Identification Colors */
-.channel-strip.ch-0 .channel-num { color: #22d3ee; }
-.channel-strip.ch-1 .channel-num { color: #34d399; }
-.channel-strip.ch-2 .channel-num { color: #fbbf24; }
-.channel-strip.ch-3 .channel-num { color: #c084fc; }
 
 /* Channel Header */
 .channel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #1f2533;
-  padding-bottom: 5px;
+  border-bottom: 1px solid var(--chassis-border);
+  padding-bottom: 4px;
 }
 
 .channel-id-row {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 5px;
 }
 
 .channel-num {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffffff;
 }
 
 .channel-key-hint {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: var(--text-dim);
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .master-led {
-  font-size: 0.55rem;
-  font-weight: 800;
+  font-size: 0.5rem;
+  font-weight: 700;
   letter-spacing: 1px;
   color: var(--screen-amber);
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid var(--screen-amber);
-  padding: 1px 5px;
+  background: #2b1d0c;
+  border: 1px solid #d97706;
+  padding: 1px 4px;
   border-radius: 2px;
   display: none;
 }
@@ -633,31 +589,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  background: #0a0c10;
-  border: 1px solid #1a1e29;
-  border-radius: 4px;
-  padding: 4px 8px;
+  gap: 4px;
+  background: var(--chassis-bay);
+  border: 1px solid var(--chassis-border);
+  border-radius: 3px;
+  padding: 3px 6px;
 }
 
 .mode-badge-label {
-  font-size: 0.55rem;
-  font-weight: 800;
-  color: #64748b;
-  letter-spacing: 1.5px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1px;
 }
 
 .channel-mode-btn {
-  background: #141822;
-  border: 1px solid #2a3142;
-  color: #cbd5e1;
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  padding: 3px 8px;
+  background: #20222a;
+  border: 1px solid #333644;
+  color: #9ca3af;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 2px 6px;
   cursor: pointer;
-  border-radius: 3px;
-  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease;
+  border-radius: 2px;
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
   outline: none;
 }
 
@@ -666,17 +622,15 @@ body {
 }
 
 .channel-mode-btn.mode-play {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: #10b981;
-  color: #34d399;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  background: #0f291e;
+  border-color: #16a34a;
+  color: #4ade80;
 }
 
 .channel-mode-btn.mode-mpc {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: #f59e0b;
+  background: #2b1d0c;
+  border-color: #d97706;
   color: #fbbf24;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
 }
 
 /* ==========================================================================
@@ -687,15 +641,14 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
-  background: radial-gradient(circle, #0e1117 0%, #06070a 100%);
-  border: 1px solid #1e2432;
-  border-radius: 6px;
-  padding: 10px 4px;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.95);
+  background: var(--chassis-bay);
+  border: 1px solid var(--chassis-border);
+  border-radius: 4px;
+  padding: 8px 4px;
   touch-action: manipulation;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .pad-assembly:focus-visible {
@@ -705,8 +658,8 @@ body {
 
 .pad-circular-housing {
   position: relative;
-  width: 132px;
-  height: 132px;
+  width: 124px;
+  height: 124px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -724,160 +677,125 @@ body {
 
 .ring-track {
   fill: none;
-  stroke: #161a24;
-  stroke-width: 6.5;
+  stroke: #18191f;
+  stroke-width: 6;
 }
 
 .ring-progress {
   fill: none;
   stroke: var(--screen-green);
-  stroke-width: 6.5;
+  stroke-width: 6;
   stroke-linecap: round;
   stroke-dasharray: 364.4;
   stroke-dashoffset: 364.4;
   transition: stroke-dashoffset 0.03s linear, stroke 0.15s ease;
-  filter: drop-shadow(0 0 3px currentColor);
 }
 
 /* Authentic Boss RC-505 Circular Silicone Tactile Button */
 .circular-silicone-pad {
-  width: 102px;
-  height: 102px;
+  width: 96px;
+  height: 96px;
   border-radius: 50% !important;
-  background: radial-gradient(circle at 45% 35%, #2a2e3a 0%, #171920 60%, #0d0f14 100%);
-  border: 2px solid #373c4d;
+  background: #1c1e24;
+  border: 2px solid #2e313c;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  box-shadow: 
-    0 6px 16px rgba(0, 0, 0, 0.9),
-    inset 0 3px 4px rgba(255, 255, 255, 0.22),
-    inset 0 -4px 8px rgba(0, 0, 0, 0.8);
-  transition: transform 0.06s ease, box-shadow 0.08s ease, filter 0.08s ease;
+  gap: 1px;
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.08), 0 3px 6px rgba(0, 0, 0, 0.6);
+  transition: transform 0.05s ease, filter 0.08s ease;
   user-select: none;
 }
 
 .pad-assembly:hover .circular-silicone-pad {
-  filter: brightness(1.2);
+  filter: brightness(1.15);
 }
 
 .pad-assembly:active .circular-silicone-pad {
-  transform: scale(0.93);
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.95),
-    inset 0 4px 8px rgba(0, 0, 0, 0.9);
+  transform: scale(0.95);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9);
 }
 
 .pad-track-badge {
-  font-size: 0.55rem;
+  font-size: 0.52rem;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  color: #94a3b8;
-  letter-spacing: 1px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.5px;
 }
 
 .pad-state-text {
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  color: #94a3b8;
+  letter-spacing: 1.5px;
+  color: #6b7280;
   text-transform: uppercase;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .pad-action-sub {
-  font-size: 0.55rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #64748b;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #4b5563;
   text-transform: uppercase;
 }
 
 .pad-time-text {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #cbd5e1;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: #9ca3af;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
 /* Circular Silicone Illuminated LED States */
 .state-empty .circular-silicone-pad {
-  background: radial-gradient(circle at 45% 35%, #252934 0%, #15171d 60%, #0c0d12 100%);
-  border-color: #313645;
+  background: #1a1c22;
+  border-color: #272a33;
 }
 
 .state-recording .circular-silicone-pad {
-  background: radial-gradient(circle at 45% 35%, #f87171 0%, #dc2626 50%, #7f1d1d 100%);
+  background: var(--color-rec);
   border-color: #fca5a5;
-  box-shadow: 
-    0 0 28px rgba(239, 68, 68, 0.85),
-    0 6px 16px rgba(0, 0, 0, 0.9),
-    inset 0 3px 5px rgba(255, 255, 255, 0.5),
-    inset 0 -3px 8px rgba(69, 10, 10, 0.9);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 16px rgba(239, 68, 68, 0.6);
 }
-.state-recording .ring-progress {
-  stroke: var(--color-rec);
-}
+.state-recording .ring-progress { stroke: var(--color-rec); }
 .state-recording .pad-track-badge { color: #fecdd3; }
-.state-recording .pad-state-text {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
-}
+.state-recording .pad-state-text { color: #ffffff; }
 .state-recording .pad-action-sub { color: #fee2e2; }
 
 .state-playing .circular-silicone-pad {
-  background: radial-gradient(circle at 45% 35%, #4ade80 0%, #16a34a 50%, #14532d 100%);
+  background: var(--color-play);
   border-color: #86efac;
-  box-shadow: 
-    0 0 28px rgba(34, 197, 94, 0.8),
-    0 6px 16px rgba(0, 0, 0, 0.9),
-    inset 0 3px 5px rgba(255, 255, 255, 0.5),
-    inset 0 -3px 8px rgba(5, 46, 22, 0.9);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 16px rgba(34, 197, 94, 0.6);
 }
-.state-playing .ring-progress {
-  stroke: var(--screen-green);
-}
+.state-playing .ring-progress { stroke: var(--screen-green); }
 .state-playing .pad-track-badge { color: #dcfce7; }
-.state-playing .pad-state-text {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
-}
+.state-playing .pad-state-text { color: #ffffff; }
 .state-playing .pad-action-sub { color: #dcfce7; }
 
 .state-overdubbing .circular-silicone-pad {
-  background: radial-gradient(circle at 45% 35%, #fb923c 0%, #ea580c 50%, #7c2d12 100%);
+  background: var(--color-dub);
   border-color: #fdba74;
-  box-shadow: 
-    0 0 28px rgba(249, 115, 22, 0.8),
-    0 6px 16px rgba(0, 0, 0, 0.9),
-    inset 0 3px 5px rgba(255, 255, 255, 0.5),
-    inset 0 -3px 8px rgba(67, 20, 7, 0.9);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 16px rgba(249, 115, 22, 0.6);
 }
-.state-overdubbing .ring-progress {
-  stroke: var(--color-dub);
-}
-.state-overdubbing .pad-state-text {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
-}
+.state-overdubbing .ring-progress { stroke: var(--color-dub); }
+.state-overdubbing .pad-state-text { color: #ffffff; }
 .state-overdubbing .pad-action-sub { color: #ffedd5; }
 
 .state-queued .circular-silicone-pad {
-  background: radial-gradient(circle at 45% 35%, #fde047 0%, #ca8a04 50%, #713f12 100%);
-  border-color: #fef08a;
-  box-shadow: 0 0 24px rgba(234, 179, 8, 0.75);
+  background: var(--color-queued);
+  border-color: #fde047;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.5);
 }
 .state-queued .pad-state-text { color: #ffffff; }
 
 .state-muted .circular-silicone-pad {
-  background: #181d26;
-  border-color: #28303f;
-  opacity: 0.65;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  background: #1c1d22;
+  border-color: #2e303a;
+  opacity: 0.6;
 }
 
 /* ==========================================================================
@@ -886,27 +804,25 @@ body {
 .channel-function-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  gap: 4px;
 }
 
 .func-pad {
-  background: linear-gradient(180deg, #1e2330 0%, #13161f 100%);
-  border: 1px solid #2d3447;
-  border-top: 1px solid #434e6a;
-  color: #94a3b8;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  padding: 6px 0;
-  border-radius: 3px;
+  background: #20222a;
+  border: 1px solid #2f323e;
+  color: #9ca3af;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 5px 0;
+  border-radius: 2px;
   cursor: pointer;
   outline: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: transform 0.05s ease, background-color 0.1s ease, color 0.1s ease;
+  transition: transform 0.05s ease, background-color 0.1s ease;
 }
 
 .func-pad:hover {
-  background: #282f42;
+  background: #2b2e3a;
   color: #ffffff;
 }
 
@@ -915,27 +831,21 @@ body {
 }
 
 .func-pad.active-mute {
-  background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%);
+  background: var(--color-rec-dark);
   border-color: #ef4444;
-  border-top-color: #fca5a5;
   color: #ffffff;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
 }
 
 .func-pad.active-solo {
-  background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+  background: #78350f;
   border-color: #f59e0b;
-  border-top-color: #fde047;
   color: #ffffff;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
 }
 
 .func-pad.active-undo {
-  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  background: #0369a1;
   border-color: #38bdf8;
-  border-top-color: #7dd3fc;
   color: #ffffff;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
 }
 
 .func-pad:disabled {
@@ -950,24 +860,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: #08090d;
-  border: 1px solid #1a1e2a;
-  border-radius: 5px;
-  padding: 10px 10px;
+  gap: 10px;
+  background: var(--chassis-bay);
+  border: 1px solid var(--chassis-border);
+  border-radius: 3px;
+  padding: 8px 8px;
   margin-top: auto;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .fader-scale {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 124px;
-  font-size: 0.52rem;
+  height: 120px;
+  font-size: 0.5rem;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: #64748b;
+  font-weight: 600;
+  color: #6b7280;
   text-align: right;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
@@ -975,8 +884,8 @@ body {
 
 .vertical-fader-assembly {
   position: relative;
-  width: 38px;
-  height: 124px;
+  width: 36px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -984,12 +893,11 @@ body {
 
 .fader-groove {
   position: absolute;
-  width: 5px;
+  width: 4px;
   height: 100%;
-  background: #020305;
-  border: 1px solid #1e2432;
+  background: #000000;
+  border: 1px solid #1f2127;
   border-radius: 2px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.95);
 }
 
 /* Custom styled vertical hardware fader slider */
@@ -998,7 +906,7 @@ body {
   appearance: slider-vertical;
   writing-mode: vertical-lr;
   direction: rtl;
-  width: 38px;
+  width: 36px;
   height: 100%;
   background: transparent;
   cursor: pointer;
@@ -1010,20 +918,20 @@ body {
 
 .pro-vertical-fader::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 36px;
-  height: 20px;
-  background: linear-gradient(180deg, #4b5563 0%, #1f2937 40%, #ffffff 48%, #ffffff 52%, #111827 60%, #030712 100%);
+  width: 34px;
+  height: 18px;
+  background: linear-gradient(180deg, #374151 0%, #1f2937 45%, #ffffff 50%, #1f2937 55%, #111827 100%);
   border: 1px solid #4b5563;
-  border-top: 1px solid #9ca3af;
+  border-top: 1px solid #6b7280;
   border-bottom: 2px solid #000000;
-  border-radius: 3px !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.95), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  border-radius: 2px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   cursor: grab;
 }
 
 .pro-vertical-fader::-webkit-slider-thumb:active {
   cursor: grabbing;
-  background: linear-gradient(180deg, #64748b 0%, #334155 40%, #38bdf8 48%, #38bdf8 52%, #1e293b 60%, #0f172a 100%);
+  background: linear-gradient(180deg, #4b5563 0%, #1f2937 45%, #38bdf8 50%, #1f2937 55%, #111827 100%);
 }
 
 /* Multi-Segment Vertical LED Meter Strip */
@@ -1031,33 +939,33 @@ body {
   display: flex;
   flex-direction: column-reverse;
   gap: 2px;
-  height: 124px;
-  background: #040507;
-  padding: 3px 4px;
-  border: 1px solid #1a1e2a;
-  border-radius: 3px;
+  height: 120px;
+  background: #000000;
+  padding: 2px 3px;
+  border: 1px solid #1c1d23;
+  border-radius: 2px;
 }
 
 .meter-segment {
-  width: 8px;
+  width: 7px;
   flex: 1;
-  background: #141720;
+  background: #181920;
   border-radius: 1px;
 }
 
 .seg-green.lit {
   background: var(--screen-green);
-  box-shadow: 0 0 5px var(--screen-green);
+  box-shadow: 0 0 3px var(--screen-green);
 }
 
 .seg-yellow.lit {
   background: var(--screen-amber);
-  box-shadow: 0 0 5px var(--screen-amber);
+  box-shadow: 0 0 3px var(--screen-amber);
 }
 
 .seg-red.lit {
   background: var(--color-rec);
-  box-shadow: 0 0 6px var(--color-rec);
+  box-shadow: 0 0 4px var(--color-rec);
 }
 
 .fader-footer {
@@ -1066,14 +974,14 @@ body {
 }
 
 .fader-db-readout {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: #38bdf8;
-  background: #06070a;
-  border: 1px solid #1f2535;
-  border-radius: 3px;
-  padding: 2px 7px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--chassis-bay);
+  border: 1px solid var(--chassis-border);
+  border-radius: 2px;
+  padding: 1px 6px;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -1085,98 +993,96 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(180deg, #141720 0%, #0c0e14 100%);
+  background: var(--chassis-panel);
   border: 1px solid var(--chassis-border);
-  border-radius: 5px;
-  padding: 6px 14px;
-  font-size: 0.65rem;
+  border-radius: 3px;
+  padding: 5px 12px;
+  font-size: 0.62rem;
   color: var(--text-muted);
 }
 
 .footer-shortcuts {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .key-shortcut {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .key-cap {
-  background: #1c212d;
-  border: 1px solid #323b50;
-  border-radius: 3px;
-  color: #f8fafc;
+  background: #202229;
+  border: 1px solid #323540;
+  border-radius: 2px;
+  color: #e5e7eb;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 1px 5px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  padding: 1px 4px;
 }
 
 .footer-spec {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  color: #94a3b8;
-  font-weight: 700;
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 #latency-display {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  color: var(--screen-cyan);
+  color: var(--text-secondary);
 }
 
 .spec-divider {
-  color: #334155;
+  color: #374151;
 }
 
 .update-section {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .version-tag {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  font-weight: 700;
+  font-size: 0.58rem;
+  font-weight: 600;
 }
 
 .update-btn {
-  background: #181d28;
-  border: 1px solid #2e374c;
-  color: #cbd5e1;
+  background: #202229;
+  border: 1px solid #323540;
+  color: var(--text-secondary);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
-  font-weight: 700;
-  padding: 2px 7px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  padding: 1px 5px;
   cursor: pointer;
-  border-radius: 3px;
-  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease;
+  border-radius: 2px;
+  transition: background-color 0.1s ease, color 0.1s ease;
 }
 
 .update-btn:hover {
-  background: #252e42;
+  background: #2c303a;
   color: #ffffff;
-  border-color: #3b4763;
 }
 
 .update-btn.available {
-  background: rgba(245, 158, 11, 0.2);
-  border-color: #f59e0b;
+  background: #3b280c;
+  border-color: #d97706;
   color: #fef08a;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
 .update-btn.up-to-date {
-  color: #34d399;
-  border-color: #059669;
+  color: #10b981;
+  border-color: #065f46;
 }
 
 /* ==========================================================================
